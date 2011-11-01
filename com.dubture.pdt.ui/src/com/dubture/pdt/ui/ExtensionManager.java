@@ -1,0 +1,61 @@
+package com.dubture.pdt.ui;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.Platform;
+
+import com.dubture.pdt.ui.extension.INamespaceResolver;
+
+public class ExtensionManager {
+	
+	private static final String NAMESPACE_RESOLVER_ID = "com.dubture.pdt.ui.namespaceresolver";	
+	private static ExtensionManager instance;
+	
+	private List<INamespaceResolver> resolvers;	
+
+	private ExtensionManager() {
+		
+		
+	}
+	public static ExtensionManager getDefault() {
+		
+		if (instance == null)
+			return instance = new ExtensionManager();
+		
+		return instance;
+		
+	}
+	
+	public List<INamespaceResolver> getNamespaceResolvers() {
+		
+		if (resolvers != null) {			
+			return resolvers;			
+		}
+		
+		resolvers = new ArrayList<INamespaceResolver>();
+		
+		IConfigurationElement[] config = Platform.getExtensionRegistry()
+				.getConfigurationElementsFor(NAMESPACE_RESOLVER_ID);		
+		
+		try {							
+			
+			for (IConfigurationElement element : config) {
+				
+				final Object extension = element.createExecutableExtension("class");
+				
+				if (extension instanceof INamespaceResolver) {					
+					resolvers.add((INamespaceResolver) extension);
+				}
+			}
+			
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+		
+		return resolvers;		
+		
+	}
+
+}

@@ -8,13 +8,13 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.dltk.core.IModelElement;
+import org.eclipse.dltk.core.IScriptFolder;
 import org.eclipse.dltk.core.search.IDLTKSearchConstants;
 import org.eclipse.dltk.internal.ui.dialogs.OpenTypeSelectionDialog2;
 import org.eclipse.dltk.ui.DLTKUIPlugin;
 import org.eclipse.dltk.ui.wizards.NewSourceModulePage;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.IDialogPage;
 import org.eclipse.jface.fieldassist.AutoCompleteField;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -24,7 +24,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.php.internal.core.project.PHPNature;
 import org.eclipse.php.internal.ui.PHPUILanguageToolkit;
-import org.eclipse.php.internal.ui.util.PHPPluginImages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -36,7 +35,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -45,10 +43,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
+import com.dubture.pdt.ui.ExtensionManager;
+import com.dubture.pdt.ui.PDTPluginImages;
+import com.dubture.pdt.ui.extension.INamespaceResolver;
+
 
 @SuppressWarnings("restriction")
 public class ClassCreationWizardPage extends NewSourceModulePage {
-
 
 	protected Text fileText;
 	protected Text superClassText;
@@ -65,19 +66,10 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 	private Button abstractCheckbox;
 	private Button finalCheckbox;
 	
-//	private String[] cities = new String[] { "Aachen", "Berlin", "Bremen", "Bochum" };	
-
-	/**
-	 * Constructor for SampleNewWizardPage.
-	 * 
-	 * @param pageName
-	 */
 	public ClassCreationWizardPage(final ISelection selection, String initialFileName) {
-//		super("wizardPage", initialFileName); //$NON-NLS-1$
+
 		super();
-		setTitle("PHP Class"); //$NON-NLS-1$
-		setDescription("Create a new PHP class"); //$NON-NLS-1$
-		setImageDescriptor(PHPPluginImages.DESC_OBJ_PHP_CLASSES_GROUP);
+		setImageDescriptor(PDTPluginImages.DESC_WIZBAN_NEW_PHPCLASS);
 		this.selection = selection;
 	}
 
@@ -277,13 +269,23 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.widthHint = 200;
 		
-		System.err.println(getScriptFolderText());		
-		
 		namespaceLabel = new Label(container, SWT.NONE);
 		namespaceLabel.setText("Namespace:");
 		
 		namespaceText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		namespaceText.setLayoutData(gd);
+		
+		List<INamespaceResolver> resolvers = ExtensionManager.getDefault().getNamespaceResolvers();
+		
+		IScriptFolder folder = getScriptFolder();
+		
+		for (INamespaceResolver resolver : resolvers) {			
+			String ns = resolver.resolve(folder);			
+			if (ns != null && ns.length() > 0) {
+				namespaceText.setText(ns);				
+				break;
+			}
+		}
 		
 		Label ph1= new Label(container, SWT.None);
 		ph1.setText("");		
@@ -458,8 +460,6 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		commentCheckbox = new Button(container, SWT.CHECK);
 		commentCheckbox.setText("Generate element comments");
 		commentCheckbox.setLayoutData(gd);
-		
-		
 		
 		initialize();
 		dialogChanged();

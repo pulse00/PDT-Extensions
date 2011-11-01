@@ -25,7 +25,8 @@ public class PDTUIPlugin extends AbstractUIPlugin {
 	
 	private PDTTemplateStore fCodeTemplateStore;
 	
-	protected ContextTypeRegistry codeTypeRegistry = null;	
+	protected ContextTypeRegistry codeTypeRegistry = null;
+
 	
 	
 	/**
@@ -91,5 +92,7 @@ public class PDTUIPlugin extends AbstractUIPlugin {
 		return codeTypeRegistry;
 	}
 	
+	
+
 
 }
