@@ -10,8 +10,7 @@
 	</extension>	
 
    <extension
-         point="org.eclipse.ui.newWizards">
-         
+         point="org.eclipse.ui.newWizards">         
 		<wizard
         	category="org.eclipse.php.project.ui"
         	class="com.dubture.pdt.ui.wizards.classes.ClassCreationWizard"
@@ -20,8 +19,54 @@
         	name="%wizard.new.class"
         	project="false">
         </wizard>
-        
-         
    </extension>
+   
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            allPopups="false"
+            locationURI="menu:sourceMenuId?before=sourceBegin">
+         <command
+               commandId="com.dubture.pdt.ui.generategetters"
+               label="Generate Getters and Setters"
+               style="push">
+            <visibleWhen
+                  checkEnabled="false">
+               <reference
+                     definitionId="org.eclipse.php.ui.phpContentType.definition">
+               </reference>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="org.eclipse.ui.category.edit"
+            description="Generate Getters and Setters"
+            id="com.dubture.pdt.ui.generategetters"
+            name="Generate Getters and Setters">
+      </command>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            class="com.dubture.pdt.ui.actions.GenerateGettersHandler"
+            commandId="com.dubture.pdt.ui.generategetters">
+         <activeWhen>
+            <reference
+                  definitionId="org.eclipse.php.ui.phpContentType.definition">
+            </reference>
+         </activeWhen>
+         <enabledWhen>
+            <reference
+                  definitionId="org.eclipse.php.ui.phpContentType.definition">
+            </reference>
+         </enabledWhen>
+      </handler>
+   </extension>
+   
 
 </plugin>
