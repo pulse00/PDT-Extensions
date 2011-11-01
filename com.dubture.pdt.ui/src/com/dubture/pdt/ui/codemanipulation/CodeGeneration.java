@@ -10,15 +10,26 @@ import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.dltk.core.IMethod;
+import org.eclipse.dltk.core.IParameter;
 import org.eclipse.dltk.core.IScriptProject;
 import org.eclipse.dltk.core.IType;
+import org.eclipse.dltk.core.ModelException;
 import org.eclipse.dltk.ti.types.IEvaluatedType;
+import org.eclipse.php.core.compiler.PHPFlags;
 import org.eclipse.php.internal.core.PHPCoreConstants;
 import org.eclipse.php.internal.core.PHPCorePlugin;
 import org.eclipse.php.internal.core.format.DefaultCodeFormattingProcessor;
 
 import com.dubture.pdt.core.util.PDTModelUtils;
 
+/**
+ * Utilities for code generation.
+ * 
+ * 
+ * @author Robert Gruendler <r.gruendler@gmail.com>
+ *
+ */
 @SuppressWarnings("restriction")
 public class CodeGeneration {
 	
@@ -63,7 +74,9 @@ public class CodeGeneration {
 	}
 	
 	
-	
+	/**
+	 * Retrieve the code for a class stub.
+	 */
 	@SuppressWarnings("rawtypes")
 	public static String getClassStub(IScriptProject project, String name, String namespace, String modifier, IType superclass, 
 			List<IType> interfaces, boolean constructor, boolean abstractMethods) {
@@ -86,13 +99,11 @@ public class CodeGeneration {
 		
 		List<IEvaluatedType> useStatements = PDTModelUtils.collectUseStatements(types, abstractMethods);
 		
-		if (useStatements.size() > 0) {
-			
+		if (useStatements.size() > 0) {			
 			buffer.append(lineDelim + lineDelim);
 			for (IEvaluatedType useStatement : useStatements) {			
 				buffer.append(String.format("use %s;%s", useStatement.getTypeName(), lineDelim));
-			}
-			
+			}			
 		}
 		
 		buffer.append(lineDelim + lineDelim);
@@ -103,7 +114,7 @@ public class CodeGeneration {
 		buffer.append("class " + name);
 		
 		if (superclass != null) {			
-			buffer.append(" extends " + superclass);
+			buffer.append(" extends " + superclass.getElementName());
 		}
 		
 		if (interfaces != null && interfaces.size() > 0) {			
@@ -120,19 +131,99 @@ public class CodeGeneration {
 			}
 		}
 		
-		buffer.append("{");
+		buffer.append(" {");
 		buffer.append(lineDelim);
 		buffer.append(lineDelim);
-		buffer.append("}");
 		
 		Map options = setupOptions(project);		
 		DefaultCodeFormattingProcessor formatter = new DefaultCodeFormattingProcessor(options);		
 		String indent = formatter.createIndentationString(1);
+				
+		if (abstractMethods && superclass != null) {
+			try {
+				for (IMethod method : superclass.getMethods()) {
+								
+					if (PHPFlags.isAbstract(method.getFlags())) {						
+						buffer.append(getMethodStub(method, indent, lineDelim));
+						buffer.append(lineDelim);
+					}
+				}
+			} catch (ModelException e) {
+				e.printStackTrace();
+			}			
+		}
 		
+		for (IType type : interfaces) {			
+			try {
+				for (IMethod method : type.getMethods()) {
+					buffer.append(getMethodStub(method, indent, lineDelim));				
+				}
+			} catch (ModelException e) {
+				e.printStackTrace();
+			}			
+		}
+		
+		buffer.append("}");
 		
 		return buffer.toString();
 	}
-	
 
 
+	/**
+	 * 
+	 * Retrieve the code stub for a given {@link IMethod}
+	 * 
+	 */
+	public static String getMethodStub(IMethod method, String indent, String lineDelim) throws ModelException {
+
+		StringBuilder buffer = new StringBuilder();		
+		String modifier = "public";
+		
+		try {
+			if (PHPFlags.isPrivate(method.getFlags())) {
+				modifier = "private";
+			} else if (PHPFlags.isProtected(method.getFlags())) {
+				modifier = "protected";
+			}
+		} catch (ModelException e) {
+			e.printStackTrace();
+		} 
+		
+		buffer.append(indent + modifier + " function ");
+		
+		buffer.append(method.getElementName());
+		buffer.append("(");
+		
+		int i=0;
+		int size = method.getParameters().length;
+		
+		for (IParameter param : method.getParameters()) {
+			
+			if (param.getType() != null) {
+				buffer.append(param.getType() + " ");
+			}
+			
+			buffer.append(param.getName());
+			
+			if (param.getDefaultValue() != null) {
+				buffer.append(" = " + param.getDefaultValue());
+			}
+			if (i++ < size-1) {
+				buffer.append(", ");
+			}			
+		}
+		
+		buffer.append(") {");
+		buffer.append(lineDelim);
+		
+		buffer.append(indent + indent + "// TODO: Auto-generated method stub");
+		buffer.append(lineDelim);
+		buffer.append(lineDelim);
+		
+		buffer.append(indent + "}");
+		buffer.append(lineDelim);
+		
+		return buffer.toString();		
+		
+	}
 }
