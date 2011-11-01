@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.resources.ProjectScope;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.IScopeContext;
@@ -79,7 +80,7 @@ public class CodeGeneration {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static String getClassStub(IScriptProject project, String name, String namespace, String modifier, IType superclass, 
-			List<IType> interfaces, boolean constructor, boolean abstractMethods) {
+			List<IType> interfaces, boolean constructor, boolean abstractMethods, boolean comments) {
 
 		String lineDelim = "\n";
 		
@@ -111,9 +112,19 @@ public class CodeGeneration {
 		if (modifier != null && modifier.length() > 0)
 			buffer.append(modifier + " " );
 		
+		
+		try {
+			if (comments) {
+				String typeComment = org.eclipse.php.ui.CodeGeneration.getTypeComment(project, name, lineDelim);
+				buffer.append(typeComment);
+				buffer.append(lineDelim);
+			}			
+		} catch (CoreException e1) {
+			e1.printStackTrace();
+		}
 		buffer.append("class " + name);
 		
-		if (superclass != null) {			
+		if (superclass != null) {
 			buffer.append(" extends " + superclass.getElementName());
 		}
 		
@@ -139,13 +150,17 @@ public class CodeGeneration {
 		DefaultCodeFormattingProcessor formatter = new DefaultCodeFormattingProcessor(options);		
 		String indent = formatter.createIndentationString(1);
 				
-		if (abstractMethods && superclass != null) {
+		if (superclass != null) {
 			try {
 				for (IMethod method : superclass.getMethods()) {
 								
-					if (PHPFlags.isAbstract(method.getFlags())) {						
-						buffer.append(getMethodStub(method, indent, lineDelim));
+					if (PHPFlags.isAbstract(method.getFlags()) && abstractMethods) {						
+						buffer.append(getMethodStub(name, method, indent, lineDelim, comments));
 						buffer.append(lineDelim);
+					}
+					
+					if (method.isConstructor() && constructor) {
+						buffer.append(getMethodStub(name, method, indent, lineDelim, comments));
 					}
 				}
 			} catch (ModelException e) {
@@ -156,7 +171,7 @@ public class CodeGeneration {
 		for (IType type : interfaces) {			
 			try {
 				for (IMethod method : type.getMethods()) {
-					buffer.append(getMethodStub(method, indent, lineDelim));				
+					buffer.append(getMethodStub(name, method, indent, lineDelim, comments));				
 				}
 			} catch (ModelException e) {
 				e.printStackTrace();
@@ -174,9 +189,23 @@ public class CodeGeneration {
 	 * Retrieve the code stub for a given {@link IMethod}
 	 * 
 	 */
-	public static String getMethodStub(IMethod method, String indent, String lineDelim) throws ModelException {
+	public static String getMethodStub(String parent, IMethod method, String indent, String lineDelim, boolean comments) throws ModelException {
 
-		StringBuilder buffer = new StringBuilder();		
+		StringBuilder buffer = new StringBuilder();				
+		String comment = null;
+		if (comments) {
+			try {
+				comment = org.eclipse.php.ui.CodeGeneration.getMethodComment(method, null, lineDelim);
+				comment = indentPattern(lineDelim + comment, indent, lineDelim);
+			} catch (CoreException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		if (comments && comment != null) {
+			buffer.append(comment);
+		}
+		
 		String modifier = "public";
 		
 		try {
@@ -189,9 +218,11 @@ public class CodeGeneration {
 			e.printStackTrace();
 		} 
 		
-		buffer.append(indent + modifier + " function ");
-		
-		buffer.append(method.getElementName());
+		String signatureIndent = comments ? "" : indent;
+		buffer.append(signatureIndent + modifier + " function ");
+		 
+		String methodName = method.isConstructor() ? parent : method.getElementName();
+		buffer.append(methodName);
 		buffer.append("(");
 		
 		int i=0;
@@ -226,4 +257,14 @@ public class CodeGeneration {
 		return buffer.toString();		
 		
 	}
+	
+	private static String indentPattern(String originalPattern, String indentation,
+			String lineDelim) {
+		
+		String delimPlusIndent = lineDelim + indentation;
+		String indentedPattern = originalPattern.replaceAll(lineDelim,delimPlusIndent) + delimPlusIndent;
+
+		return indentedPattern;
+	}
+	
 }

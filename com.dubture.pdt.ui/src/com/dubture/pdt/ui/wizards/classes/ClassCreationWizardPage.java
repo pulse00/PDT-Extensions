@@ -39,6 +39,7 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
@@ -72,6 +73,10 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 	private String sClass = "";
 	private String namespace = "";
 	private String modifier = "";
+	private boolean generateComments = false;
+	private boolean generateAbstract = true;
+	private boolean generateConstructor = false;
+	
 	
 	private List<String> interfaces = new ArrayList<String>();
 	
@@ -481,6 +486,13 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		superClassConstructors = new Button(container, SWT.CHECK);
 		superClassConstructors .setText("Superclass constructor");
 		superClassConstructors .setLayoutData(gd);
+		superClassConstructors.addSelectionListener(new SelectionAdapter() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				generateConstructor = superClassConstructors.getSelection();				
+			}
+		});
 
 		Label methodDummy2= new Label(container, SWT.NONE);
 		methodDummy2.setText("");
@@ -489,6 +501,13 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		abstractMethods.setText("Inherited abstract methods");
 		abstractMethods.setSelection(true);
 		abstractMethods.setLayoutData(gd);
+		abstractMethods.addSelectionListener(new SelectionAdapter() {		
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+
+				generateAbstract = abstractMethods.getSelection();
+			}
+		});
 		
 		gd = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
 		gd.horizontalSpan = nColumns;
@@ -507,6 +526,13 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		commentCheckbox = new Button(container, SWT.CHECK);
 		commentCheckbox.setText("Generate element comments");
 		commentCheckbox.setLayoutData(gd);
+		commentCheckbox.addSelectionListener(new SelectionAdapter() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				generateComments = commentCheckbox.getSelection();
+			}
+		});
 		
 		dialogChanged();
 		setControl(container);
@@ -607,7 +633,7 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 	
 	public boolean shouldGenerateComments() {
 
-		return commentCheckbox.getSelection();
+		return generateComments;
 		
 	}
 
@@ -661,7 +687,7 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		}
 		
 		String content = CodeGeneration.getClassStub(getScriptFolder().getScriptProject(), filename, 
-				namespace, modifier, superclass, interfaces, true, true);
+				namespace, modifier, superclass, interfaces, generateConstructor, generateAbstract, generateComments);
 		
 		return content;
 	}
