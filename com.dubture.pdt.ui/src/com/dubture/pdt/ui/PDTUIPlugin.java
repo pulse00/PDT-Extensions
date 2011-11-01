@@ -1,7 +1,16 @@
 package com.dubture.pdt.ui;
 
+import java.io.IOException;
+
+import org.eclipse.jface.text.templates.ContextTypeRegistry;
+import org.eclipse.jface.text.templates.persistence.TemplateStore;
+import org.eclipse.php.internal.ui.corext.template.php.CodeTemplateContextType;
+import org.eclipse.ui.editors.text.templates.ContributionContextTypeRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
+
+import com.dubture.pdt.ui.preferences.PDTTemplateStore;
+import com.dubture.pdt.ui.preferences.PreferenceConstants;
 
 /**
  * The activator class controls the plug-in life cycle
@@ -13,6 +22,11 @@ public class PDTUIPlugin extends AbstractUIPlugin {
 
 	// The shared instance
 	private static PDTUIPlugin plugin;
+	
+	private PDTTemplateStore fCodeTemplateStore;
+	
+	protected ContextTypeRegistry codeTypeRegistry = null;	
+	
 	
 	/**
 	 * The constructor
@@ -46,5 +60,36 @@ public class PDTUIPlugin extends AbstractUIPlugin {
 	public static PDTUIPlugin getDefault() {
 		return plugin;
 	}
+	
+	public TemplateStore getCodeTemplateStore() {
+		if (fCodeTemplateStore == null) {
+
+			fCodeTemplateStore = new PDTTemplateStore(
+					getCodeTemplateContextRegistry(), getPreferenceStore(),
+					PreferenceConstants.CODE_TEMPLATES_KEY);
+
+			try {
+				fCodeTemplateStore.load();
+			} catch (IOException e) {
+//				Logger.logException(e);
+			}
+		}
+
+		return fCodeTemplateStore;
+	}
+	
+	public ContextTypeRegistry getCodeTemplateContextRegistry() {
+		if (codeTypeRegistry == null) {
+			ContributionContextTypeRegistry registry = new ContributionContextTypeRegistry();
+
+			
+			CodeTemplateContextType.registerContextTypes(registry);
+
+			codeTypeRegistry = registry;
+		}
+
+		return codeTypeRegistry;
+	}
+	
 
 }
