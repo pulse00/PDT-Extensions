@@ -4,26 +4,34 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.dltk.core.IModelElement;
 import org.eclipse.dltk.core.IScriptFolder;
+import org.eclipse.dltk.core.ISourceModule;
+import org.eclipse.dltk.core.IType;
+import org.eclipse.dltk.core.index2.search.ISearchEngine.MatchRule;
 import org.eclipse.dltk.core.search.IDLTKSearchConstants;
+import org.eclipse.dltk.core.search.IDLTKSearchScope;
+import org.eclipse.dltk.core.search.SearchEngine;
 import org.eclipse.dltk.internal.ui.dialogs.OpenTypeSelectionDialog2;
 import org.eclipse.dltk.ui.DLTKUIPlugin;
+import org.eclipse.dltk.ui.dialogs.StatusInfo;
 import org.eclipse.dltk.ui.wizards.NewSourceModulePage;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.fieldassist.AutoCompleteField;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.php.internal.core.model.PhpModelAccess;
 import org.eclipse.php.internal.core.project.PHPNature;
 import org.eclipse.php.internal.ui.PHPUILanguageToolkit;
+import org.eclipse.php.internal.ui.PHPUIMessages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -45,6 +53,7 @@ import org.eclipse.ui.PlatformUI;
 
 import com.dubture.pdt.ui.ExtensionManager;
 import com.dubture.pdt.ui.PDTPluginImages;
+import com.dubture.pdt.ui.codemanipulation.CodeGeneration;
 import com.dubture.pdt.ui.extension.INamespaceResolver;
 
 
@@ -59,10 +68,14 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 	protected Label targetResourceLabel;
 	protected Label superClassLabel;
 	
+	private String filename = "";	
+	private String sClass = "";
+	private String namespace = "";
+	private String modifier = "";
+	
 	private List<String> interfaces = new ArrayList<String>();
 	
-	private TableViewer interfaceTable;
-	
+	private TableViewer interfaceTable;	
 	private Button abstractCheckbox;
 	private Button finalCheckbox;
 	
@@ -93,7 +106,12 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		
 		@Override
 		public void widgetSelected(SelectionEvent e) {
-			dialogChanged();			
+			dialogChanged();
+			
+			if (e.widget == abstractCheckbox) {
+				modifier = "abstract";
+			} else if (e.widget == finalCheckbox)
+				modifier = "final";
 		}
 		
 		@Override
@@ -160,6 +178,7 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 						superclass += type.getElementName();
 						
 						superClassText.setText(superclass);
+						ClassCreationWizardPage.this.sClass = superclass;
 
 					} catch (Exception x) {
 
@@ -274,6 +293,18 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		
 		namespaceText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		namespaceText.setLayoutData(gd);
+		namespaceText.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyReleased(KeyEvent e) {
+				namespace = namespaceText.getText();				
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				
+			}
+		});
 		
 		List<INamespaceResolver> resolvers = ExtensionManager.getDefault().getNamespaceResolvers();
 		
@@ -287,6 +318,8 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 			}
 		}
 		
+		namespace = namespaceText.getText();
+		
 		Label ph1= new Label(container, SWT.None);
 		ph1.setText("");		
 		
@@ -295,7 +328,19 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		
 		superClassText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		superClassText.setLayoutData(gd);
-		superClassText.addKeyListener(acListener);
+		superClassText.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyReleased(KeyEvent e) {
+				sClass = superClassText.getText();				
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				
+			}
+		});
+		
 		superClassText.addFocusListener(new FocusListener() {
 			
 			@Override
@@ -305,7 +350,8 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 			
 			@Override
 			public void focusGained(FocusEvent e) {
-//				decoration.show();				
+//				decoration.show();
+
 			}
 		});
 
@@ -349,6 +395,7 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		fileText.addModifyListener(new ModifyListener() {
 			public void modifyText(final ModifyEvent e) {
 				dialogChanged();
+				filename = fileText.getText();
 			}
 		});
 		
@@ -461,111 +508,65 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		commentCheckbox.setText("Generate element comments");
 		commentCheckbox.setLayoutData(gd);
 		
-		initialize();
 		dialogChanged();
 		setControl(container);
 		Dialog.applyDialogFont(container);
 				
 	}
+	
+	protected String getContainerName() {
+		
+		return getScriptFolderText();		
+		
+	}
 
-	/**
-	 * Tests if the current workbench selection is a suitable container to use.
-	 */
-	private void initialize() {
-		if (selection != null && selection.isEmpty() == false
-				&& selection instanceof IStructuredSelection) {
-			final IStructuredSelection ssel = (IStructuredSelection) selection;
-			if (ssel.size() > 1) {
-				return;
-			}
 
-			Object obj = ssel.getFirstElement();
-			if (obj instanceof IAdaptable) {
-				obj = ((IAdaptable) obj).getAdapter(IResource.class);
-			}
+	protected void dialogChanged() {
+		
+		final String container = getContainerName();
+		final String fileName = getFileName();
 
-			IContainer container = null;
-			if (obj instanceof IResource) {
-				if (obj instanceof IContainer) {
-					container = (IContainer) obj;
-				} else {
-					container = ((IResource) obj).getParent();
+		if (abstractCheckbox.getSelection() && finalCheckbox.getSelection()) {			
+			updateStatus("A class cannot be abstract and final at the same time");
+			return;
+		}
+		if (container.length() == 0) {
+			updateStatus(PHPUIMessages.PHPFileCreationWizardPage_10); //$NON-NLS-1$
+			return;
+		}
+		
+		if (fileName != null
+				&& !fileName.equals("") && getScriptFolder().getSourceModule(fileName).exists()) { //$NON-NLS-1$
+			updateStatus("The specified class already exists"); //$NON-NLS-1$
+			return;
+		}
+		
+		int dotIndex = fileName.lastIndexOf('.');
+		if (fileName.length() == 0 || dotIndex == 0) {
+			updateStatus(PHPUIMessages.PHPFileCreationWizardPage_15); //$NON-NLS-1$
+			return;
+		}
+
+		if (dotIndex != -1) {
+			String fileNameWithoutExtention = fileName.substring(0, dotIndex);
+			for (int i = 0; i < fileNameWithoutExtention.length(); i++) {
+				char ch = fileNameWithoutExtention.charAt(i);
+				if (!(Character.isJavaIdentifierPart(ch) || ch == '.' || ch == '-')) {
+					updateStatus(PHPUIMessages.PHPFileCreationWizardPage_16); //$NON-NLS-1$
+					return;
 				}
 			}
-
-			if (container != null) {
-//				containerName = container.getFullPath().toString();
-			}
 		}
-//		setInitialFileName(initialFileName); //$NON-NLS-1$
-	}
-
-	protected void setInitialFileName(final String fileName) {
+				
+		String text = fileText.getText();
 		
-		fileText.setFocus();
-		fileText.setText(fileName);
-		fileText.setSelection(0, fileName.length());
-	}
-
-
-	/**
-	 * Ensures that both text fields are set.
-	 */
-	protected void dialogChanged() {
-//		final String container = getContainerName();
-//		final String fileName = getFileName();
-//
-//		if (abstractCheckbox.getSelection() && finalCheckbox.getSelection()) {			
-//			updateStatus("A class cannot be abstract and final at the same time");
-//			return;
-//		}
-//		if (container.length() == 0) {
-//			updateStatus(PHPUIMessages.PHPFileCreationWizardPage_10); //$NON-NLS-1$
-//			return;
-//		}
-//		final IContainer containerFolder = getContainer(container);
-//		if (containerFolder == null || !containerFolder.exists()) {
-//			updateStatus(PHPUIMessages.PHPFileCreationWizardPage_11); //$NON-NLS-1$
-//			return;
-//		}
-//		if (!containerFolder.getProject().isOpen()) {
-//			updateStatus(PHPUIMessages.PHPFileCreationWizardPage_12); //$NON-NLS-1$
-//			return;
-//		}
-//		if (fileName != null
-//				&& !fileName.equals("") && containerFolder.getFile(new Path(fileName)).exists()) { //$NON-NLS-1$
-//			updateStatus("The specified class already exists"); //$NON-NLS-1$
-//			return;
-//		}
-//		
-//		
-//
-//		int dotIndex = fileName.lastIndexOf('.');
-//		if (fileName.length() == 0 || dotIndex == 0) {
-//			updateStatus(PHPUIMessages.PHPFileCreationWizardPage_15); //$NON-NLS-1$
-//			return;
-//		}
-//
-//		if (dotIndex != -1) {
-//			String fileNameWithoutExtention = fileName.substring(0, dotIndex);
-//			for (int i = 0; i < fileNameWithoutExtention.length(); i++) {
-//				char ch = fileNameWithoutExtention.charAt(i);
-//				if (!(Character.isJavaIdentifierPart(ch) || ch == '.' || ch == '-')) {
-//					updateStatus(PHPUIMessages.PHPFileCreationWizardPage_16); //$NON-NLS-1$
-//					return;
-//				}
-//			}
-//		}
-//				
-//		String text = fileText.getText();
-//		
-//		if (text.length() > 0 && Character.isLowerCase(fileText.getText().charAt(0))) {						
-//			setMessage("Classes starting with lowercase letters are discouraged", IMessageProvider.WARNING);						
-//		} else {
-//			setMessage("");
-//		}
-//		
-//		updateStatus(null);
+		if (text.length() > 0 && Character.isLowerCase(fileText.getText().charAt(0))) {						
+			setMessage("Classes starting with lowercase letters are discouraged", IMessageProvider.WARNING);						
+		} else {
+			setMessage("");
+		}
+		
+		updateStatus(new IStatus[]{new StatusInfo()});
 	}
 
 	protected void updateStatus(final String message) {
@@ -576,7 +577,7 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 
 
 	public String getFileName() {
-		return fileText.getText() + ".php";
+		return filename + ".php";
 	}
 
 	public String getSuperclass() {
@@ -633,4 +634,36 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		return PHPNature.ID;
 
 	}
+	
+	
+	@Override
+	protected String getFileContent(ISourceModule module) throws CoreException {
+
+		PhpModelAccess model = PhpModelAccess.getDefault();		
+		IDLTKSearchScope scope = SearchEngine.createSearchScope(getScriptFolder().getScriptProject());
+		
+		NullProgressMonitor monitor = new NullProgressMonitor();
+		IType[] superTypes = model.findTypes(sClass, MatchRule.EXACT, 0, 0, scope, monitor);
+		
+		IType superclass = null;
+		
+		if (superTypes.length == 1) {
+			superclass = superTypes[0];
+		}
+		
+		List<IType> interfaces = new ArrayList<IType>();
+		
+		for (String iface : getInterfaces()) {			
+			IType[] ifaces = model.findTypes(iface, MatchRule.EXACT, 0, 0, scope, monitor);			
+			if (ifaces.length == 1) {
+				interfaces.add(ifaces[0]);
+			}
+		}
+		
+		String content = CodeGeneration.getClassStub(getScriptFolder().getScriptProject(), filename, 
+				namespace, modifier, superclass, interfaces, true, true);
+		
+		return content;
+	}
+	
 }
