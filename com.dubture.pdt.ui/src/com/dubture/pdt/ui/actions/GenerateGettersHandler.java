@@ -70,7 +70,7 @@ public class GenerateGettersHandler extends SelectionHandler implements
 	private String lineDelim;
 	private boolean insertFirst = false;
 	private boolean insertLast = false;
-	private IMethod insertAfter = null;
+	private IModelElement insertAfter = null;
 	
 	
 	@SuppressWarnings("rawtypes")
@@ -212,6 +212,9 @@ public class GenerateGettersHandler extends SelectionHandler implements
 					}
 				}
 				
+				insertFirst = insertLast = false;
+				insertAfter = null;
+				
 				if (dialog.insertAsFirstMember())
 					insertFirst = true;
 				else if (dialog.insertAsLastMember())
@@ -260,22 +263,33 @@ public class GenerateGettersHandler extends SelectionHandler implements
 		Block body = clazz.getBody();
 		List<Statement> bodyStatements = body.statements();
 				
+
 		int end = bodyStatements.get(bodyStatements.size()-1).getEnd();
 		
-		if (insertFirst) {			
-			end = bodyStatements.get(0).getStart();
-		} else if (insertAfter != null) {		
+		if (insertFirst) {
+			end = bodyStatements.get(0).getEnd();
+		} else if (insertAfter != null) {
+			
+			boolean found = false;
+			
 			for (IMethod method : type.getMethods()) {				
 				if (method == insertAfter) {
 					ISourceRange r = method.getSourceRange();
 					end = r.getOffset() + r.getLength();
+					found = true;
+				}
+			}
+			
+			if (!found) {				
+				for (IField field : type.getFields()) {
+					ISourceRange r = field.getSourceRange();
+					end = r.getOffset() + r.getLength();					
 				}
 			}
 		}
 		
-		
 		lineDelim = TextUtilities.getDefaultLineDelimiter(document);
-		
+		String methods = "";
 		
 		int i = 0;
 		for (GetterSetterEntry entry : entries) {
@@ -298,10 +312,12 @@ public class GenerateGettersHandler extends SelectionHandler implements
 				formatted = lineDelim + formatted;
 			}
 			
-			document.replace(end, 0, formatted);
-			end += formatted.length();
+			methods+= formatted;
+
 			
 		}				
+		System.err.println("insert at " + end);		
+		document.replace(end, 0, methods);
 	}
 	
 	private String indentPattern(String originalPattern, String indentation,

@@ -1,7 +1,9 @@
 package com.dubture.pdt.ui.dialog;
 
 import org.eclipse.dltk.ast.Modifiers;
+import org.eclipse.dltk.core.IField;
 import org.eclipse.dltk.core.IMethod;
+import org.eclipse.dltk.core.IModelElement;
 import org.eclipse.dltk.core.IType;
 import org.eclipse.dltk.core.ModelException;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
@@ -98,6 +100,10 @@ public class GetterSetterDialog extends CheckedTreeSelectionDialog {
         insertionPoint.add("Last member");
         
         try {
+        	
+        for (IField field : type.getFields()) {
+        	insertionPoint.add(String.format("after %s", field.getElementName()));
+        }
        	 for (IMethod method : type.getMethods()) {
        		 insertionPoint.add(String.format("after '%s()'", method.getElementName()));
        	 }
@@ -109,11 +115,13 @@ public class GetterSetterDialog extends CheckedTreeSelectionDialog {
        	 
 			@Override
        	public void widgetSelected(SelectionEvent e) {        		
-       		 insertAfter = insertionPoint.getSelectionIndex();        		 
+       		 insertAfter = insertionPoint.getSelectionIndex();
+       		 System.err.println("insert after is " + insertAfter);
        	}
         });
         
         insertionPoint.select(1);
+        insertAfter = 1;
 		
 		Group group = new Group(parent, SWT.NONE);
 		gd = new GridData(GridData.FILL_BOTH);
@@ -207,15 +215,23 @@ public class GetterSetterDialog extends CheckedTreeSelectionDialog {
 
 	}
 	
-	public IMethod getInsertionPoint() {
+	public IModelElement getInsertionPoint() {
 
 		try {
+			
 			int i = insertAfter - 2;
 			
+			if (i <= 1)
+				return null;
 			IMethod[] methods = type.getMethods();
+			IField[] fields = type.getFields();			
 			
-			if (insertAfter > 1)
+			if (i < fields.length) {				
+				return fields[i];
+			} else {				
+				i -= fields.length;
 				return methods[i];
+			}
 			
 		} catch (ModelException e) {
 
