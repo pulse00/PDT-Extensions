@@ -116,7 +116,6 @@ public class GetterSetterDialog extends CheckedTreeSelectionDialog {
 			@Override
        	public void widgetSelected(SelectionEvent e) {        		
        		 insertAfter = insertionPoint.getSelectionIndex();
-       		 System.err.println("insert after is " + insertAfter);
        	}
         });
         
@@ -221,7 +220,7 @@ public class GetterSetterDialog extends CheckedTreeSelectionDialog {
 			
 			int i = insertAfter - 2;
 			
-			if (i <= 1)
+			if (i < 0)
 				return null;
 			IMethod[] methods = type.getMethods();
 			IField[] fields = type.getFields();			
@@ -230,7 +229,8 @@ public class GetterSetterDialog extends CheckedTreeSelectionDialog {
 				return fields[i];
 			} else {				
 				i -= fields.length;
-				return methods[i];
+				if (i >= 0 && i < methods.length)
+					return methods[i];
 			}
 			
 		} catch (ModelException e) {

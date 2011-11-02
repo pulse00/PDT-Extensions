@@ -69,7 +69,6 @@ public class GenerateGettersHandler extends SelectionHandler implements
 	private SourceType type;
 	private String lineDelim;
 	private boolean insertFirst = false;
-	private boolean insertLast = false;
 	private IModelElement insertAfter = null;
 	
 	
@@ -212,14 +211,13 @@ public class GenerateGettersHandler extends SelectionHandler implements
 					}
 				}
 				
-				insertFirst = insertLast = false;
+				insertFirst = false;
 				insertAfter = null;
 				
 				if (dialog.insertAsFirstMember())
 					insertFirst = true;
-				else if (dialog.insertAsLastMember())
-					insertLast = true;
-				else insertAfter = dialog.getInsertionPoint();
+				else if (dialog.insertAsLastMember()) {
+				} else insertAfter = dialog.getInsertionPoint();
 				
 				generate(entries, dialog.getModifier(), dialog.doGenerateComments());
 				
@@ -267,7 +265,7 @@ public class GenerateGettersHandler extends SelectionHandler implements
 		int end = bodyStatements.get(bodyStatements.size()-1).getEnd();
 		
 		if (insertFirst) {
-			end = bodyStatements.get(0).getEnd();
+			end = bodyStatements.get(0).getStart() - 1;
 		} else if (insertAfter != null) {
 			
 			boolean found = false;
@@ -283,7 +281,7 @@ public class GenerateGettersHandler extends SelectionHandler implements
 			if (!found) {				
 				for (IField field : type.getFields()) {
 					ISourceRange r = field.getSourceRange();
-					end = r.getOffset() + r.getLength();					
+					end = r.getOffset() + r.getLength() + 1;
 				}
 			}
 		}
@@ -315,8 +313,7 @@ public class GenerateGettersHandler extends SelectionHandler implements
 			methods+= formatted;
 
 			
-		}				
-		System.err.println("insert at " + end);		
+		}						
 		document.replace(end, 0, methods);
 	}
 	
