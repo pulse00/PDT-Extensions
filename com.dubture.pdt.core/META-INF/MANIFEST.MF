@@ -1,13 +1,13 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PDT Extensions Core Plugin
-Bundle-SymbolicName: com.dubture.pdt.core
+Bundle-SymbolicName: com.dubture.pdt.core;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: com.dubture.pdt.core.PDTCorePlugin
 Bundle-Vendor: https://github.com/pulse00
 Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.dltk.core;bundle-version="4.0.0",
- org.eclipse.php.core;bundle-version="3.0.0"
+ org.eclipse.php.core;bundle-version="3.0.0",
+ org.eclipse.dltk.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: com.dubture.pdt.core,
