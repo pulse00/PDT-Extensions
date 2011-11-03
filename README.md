@@ -4,6 +4,8 @@
 
 http://pulse00.github.com/PDT-Extensions/
 
+[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=pulse00&url=https://github.com/pulse00/PDT-Extensions&title=PDT-Extensions&language=en_GB&tags=github&category=software) 
+
 ## Current features
 
 ### Class Wizard
