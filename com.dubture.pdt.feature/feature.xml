@@ -2,7 +2,7 @@
 <feature
       id="com.dubture.pdt.feature"
       label="PDT Extensions Feature"
-      version="1.0.0.qualifier"
+      version="1.0.1.qualifier"
       provider-name="https://github.com/pulse00">
 
    <description url="https://github.com/pulse00/PDT-Extensions">
