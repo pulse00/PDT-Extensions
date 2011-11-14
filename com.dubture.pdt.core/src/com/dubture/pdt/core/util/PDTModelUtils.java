@@ -7,16 +7,19 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.dltk.ast.declarations.MethodDeclaration;
 import org.eclipse.dltk.ast.declarations.ModuleDeclaration;
 import org.eclipse.dltk.ast.references.SimpleReference;
 import org.eclipse.dltk.ast.references.TypeReference;
 import org.eclipse.dltk.core.IMethod;
+import org.eclipse.dltk.core.IParameter;
 import org.eclipse.dltk.core.IType;
 import org.eclipse.dltk.core.ModelException;
 import org.eclipse.dltk.core.SourceParserUtil;
 import org.eclipse.dltk.evaluation.types.MultiTypeType;
 import org.eclipse.dltk.ti.types.IEvaluatedType;
 import org.eclipse.php.core.compiler.PHPFlags;
+import org.eclipse.php.internal.core.compiler.ast.nodes.FormalParameter;
 import org.eclipse.php.internal.core.compiler.ast.nodes.NamespaceReference;
 import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTag;
@@ -242,6 +245,53 @@ public class PDTModelUtils {
 	}
 	
 	
+	public static String getMethodSignature(MethodDeclaration method) {
+		
+		String signature = method.getName();
+		
+		for (Object o: method.getArguments()) {
+
+			try {
+				FormalParameter param = (FormalParameter) o;
+
+				if (param.getParameterType() != null) {										
+					signature += param.getParameterType().getName();										
+				}
+				
+			} catch (ClassCastException e) {
+
+			}
+		}
+		
+		return signature;
+				
+	}
+	
+	public static String getMethodSignature(IMethod method) {
+		
+		String methodSignature = method.getElementName();
+		
+		try {
+			for (IParameter param: method.getParameters()) {
+
+				try {
+					
+					if (param.getType() != null) {										
+						methodSignature += param.getType();										
+					}
+					
+				} catch (ClassCastException e) {
+
+				}
+			}
+		} catch (ModelException e) {
+			e.printStackTrace();
+		}
+		
+		return methodSignature;
+		
+		
+	}	
 		
 
 }

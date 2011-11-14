@@ -7,12 +7,9 @@ import java.util.List;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.dltk.ast.declarations.MethodDeclaration;
 import org.eclipse.dltk.ast.references.TypeReference;
-import org.eclipse.dltk.compiler.problem.DefaultProblem;
-import org.eclipse.dltk.compiler.problem.IProblem;
-import org.eclipse.dltk.compiler.problem.ProblemSeverity;
 import org.eclipse.dltk.core.IMethod;
+import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.IType;
-import org.eclipse.dltk.core.builder.IBuildContext;
 import org.eclipse.dltk.core.index2.search.ISearchEngine.MatchRule;
 import org.eclipse.dltk.core.search.IDLTKSearchScope;
 import org.eclipse.dltk.core.search.SearchEngine;
@@ -21,24 +18,29 @@ import org.eclipse.php.internal.core.compiler.ast.nodes.FullyQualifiedReference;
 import org.eclipse.php.internal.core.compiler.ast.visitor.PHPASTVisitor;
 import org.eclipse.php.internal.core.model.PhpModelAccess;
 
-import com.dubture.pdt.core.compiler.IPDTProblem;
-import com.dubture.pdt.core.util.ModelUtils;
+import com.dubture.pdt.core.util.PDTModelUtils;
 
 @SuppressWarnings("restriction")
 public class PDTVisitor extends PHPASTVisitor {
 
-	private final IBuildContext context;
+	private final ISourceModule context;
+	
+	private List<IMethod> unimplemented = new ArrayList<IMethod>();
 
-	public PDTVisitor(IBuildContext context) {
+	public PDTVisitor(ISourceModule sourceModule) {
 
-		this.context = context;
+		this.context = sourceModule;
 	}
 	
-	@SuppressWarnings("deprecation")
+	public List<IMethod> getUnimplementedMethods() {
+		
+		return unimplemented;
+	}
+	
 	public boolean endvisit(ClassDeclaration s) throws Exception {
 
 		Collection<TypeReference> interfaces = s.getInterfaceList();		
-		IDLTKSearchScope scope = SearchEngine.createSearchScope(context.getSourceModule().getScriptProject());
+		IDLTKSearchScope scope = SearchEngine.createSearchScope(context.getScriptProject());
 		
 		PhpModelAccess model = PhpModelAccess.getDefault();
 		for (TypeReference interf : interfaces) {
@@ -50,16 +52,14 @@ public class PDTVisitor extends PHPASTVisitor {
 				
 				for (IType type : types) {
 					
-					List<IMethod> unimplemented = new ArrayList<IMethod>();
-					
 					for (IMethod method : type.getMethods()) {
 
-						String methodSignature = ModelUtils.getMethodSignature(method);
+						String methodSignature = PDTModelUtils.getMethodSignature(method);
 						
 						boolean implemented = false;
 						for (MethodDeclaration typeMethod : s.getMethods()) {					
 							
-							String signature = ModelUtils.getMethodSignature(typeMethod);
+							String signature = PDTModelUtils.getMethodSignature(typeMethod);
 							
 							if (methodSignature.equals(signature)) {
 								implemented = true;
@@ -70,27 +70,8 @@ public class PDTVisitor extends PHPASTVisitor {
 						if (!implemented) {
 							unimplemented.add(method);
 						}
-					}
-					
-					if (unimplemented.size() > 0) {
-						
-						//TODO: add preference page for that
-						ProblemSeverity severity = ProblemSeverity.WARNING;
-						int lineNo = context.getLineTracker().getLineInformationOfOffset(fqr.sourceStart()).getOffset();
-						String message = "Missing method implementations: ";
-						
-						for (IMethod m : unimplemented) {							
-							message += m.getElementName() + ", ";							
-						}
-						
-						IProblem problem = new DefaultProblem(context.getFileName(), message, IPDTProblem.InterfaceRelated,
-								new String[0], severity, fqr.sourceStart(), fqr.sourceEnd(),lineNo);
-						
-						context.getProblemReporter().reportProblem(problem);
-						
 					}					
-				}
-				
+				}				
 			}
 		}
 		

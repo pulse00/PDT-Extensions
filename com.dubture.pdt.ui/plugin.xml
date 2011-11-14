@@ -67,6 +67,13 @@
          </enabledWhen>
       </handler>
    </extension>
+   <extension
+         point="org.eclipse.php.ui.quickFixProcessors">
+      <quickFixProcessor
+            class="com.dubture.pdt.ui.quickfix.InterfaceMethodQuickFixProcessor"
+            id="com.dubture.pdt.ui.quickFixProcessor">
+      </quickFixProcessor>
+   </extension>
    
 
 </plugin>
