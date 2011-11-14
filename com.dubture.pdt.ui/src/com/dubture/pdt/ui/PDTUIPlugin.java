@@ -2,6 +2,7 @@ package com.dubture.pdt.ui;
 
 import java.io.IOException;
 
+import org.eclipse.dltk.ui.viewsupport.ImageDescriptorRegistry;
 import org.eclipse.jface.text.templates.ContextTypeRegistry;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.php.internal.ui.corext.template.php.CodeTemplateContextType;
@@ -15,6 +16,7 @@ import com.dubture.pdt.ui.preferences.PreferenceConstants;
 /**
  * The activator class controls the plug-in life cycle
  */
+@SuppressWarnings("restriction")
 public class PDTUIPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
@@ -27,8 +29,8 @@ public class PDTUIPlugin extends AbstractUIPlugin {
 	
 	protected ContextTypeRegistry codeTypeRegistry = null;
 
-	
-	
+	private ImageDescriptorRegistry fImageDescriptorRegistry;
+
 	/**
 	 * The constructor
 	 */
@@ -92,7 +94,17 @@ public class PDTUIPlugin extends AbstractUIPlugin {
 		return codeTypeRegistry;
 	}
 	
-	
+	public static ImageDescriptorRegistry getImageDescriptorRegistry() {
+		return PDTUIPlugin.getDefault().internalGetImageDescriptorRegistry();
+	}
 
+	private ImageDescriptorRegistry internalGetImageDescriptorRegistry() {
+		if (fImageDescriptorRegistry == null) {
+			fImageDescriptorRegistry = new ImageDescriptorRegistry();
+		}
+		return fImageDescriptorRegistry;
+	}
+	
+	
 
 }

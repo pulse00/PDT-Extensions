@@ -13,4 +13,5 @@ Bundle-ActivationPolicy: lazy
 Export-Package: com.dubture.pdt.core,
  com.dubture.pdt.core.builder,
  com.dubture.pdt.core.compiler,
- com.dubture.pdt.core.util
+ com.dubture.pdt.core.util,
+ com.dubture.pdt.core.visitor

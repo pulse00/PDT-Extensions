@@ -1,3 +1,11 @@
+/*
+ * This file is part of the PDT Extensions eclipse plugin.
+ *
+ * (c) Robert Gruendler <r.gruendler@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 package com.dubture.pdt.core.builder;
 
 import java.util.List;
@@ -9,15 +17,13 @@ import org.eclipse.dltk.compiler.problem.IProblem;
 import org.eclipse.dltk.compiler.problem.ProblemSeverity;
 import org.eclipse.dltk.core.IMethod;
 import org.eclipse.dltk.core.ISourceModule;
-import org.eclipse.dltk.core.ISourceRange;
-import org.eclipse.dltk.core.IType;
-import org.eclipse.dltk.core.ModelException;
 import org.eclipse.dltk.core.SourceParserUtil;
 import org.eclipse.dltk.core.builder.IBuildContext;
 import org.eclipse.dltk.core.builder.IBuildParticipant;
 
-import com.dubture.pdt.core.PDTVisitor;
 import com.dubture.pdt.core.compiler.IPDTProblem;
+import com.dubture.pdt.core.compiler.MissingMethodImplementation;
+import com.dubture.pdt.core.visitor.PDTVisitor;
 
 public class PDTBuildParticipant implements IBuildParticipant {
 
@@ -45,33 +51,25 @@ public class PDTBuildParticipant implements IBuildParticipant {
 	}
 
 	@SuppressWarnings("deprecation")
-	private void reportUnimplementedMethods(List<IMethod> unimplementedMethods, ISourceModule sourceModule)
+	private void reportUnimplementedMethods(List<MissingMethodImplementation> misses, ISourceModule sourceModule)
 	{
 
-		try {
-			
-			IType[] types;			
-			types = sourceModule.getTypes();
-			IType type = types[0];
+		ProblemSeverity severity = ProblemSeverity.WARNING;
 
-			ISourceRange range = type.getSourceRange();
+		for (MissingMethodImplementation miss : misses) {
 
+			int lineNo = context.getLineTracker().getLineInformationOfOffset(miss.getStart()).getOffset();
+			String message = "The type " + miss.getTypeName() + " must implement the inherited method " + miss.getFirstMethodName();
 
-			ProblemSeverity severity = ProblemSeverity.WARNING;
-			int lineNo = context.getLineTracker().getLineInformationOfOffset(range.getOffset()).getOffset();
-			String message = "Missing method implementations: ";
-
-			for (IMethod m : unimplementedMethods) {							
+			for (IMethod m : miss.getMisses()) {							
 				message += m.getElementName() + ", ";							
 			}
 
 			IProblem problem = new DefaultProblem(context.getFileName(), message, IPDTProblem.InterfaceRelated,
-					new String[0], severity, range.getOffset(), range.getOffset() + range.getLength(),lineNo);
+					new String[0], severity, miss.getStart(), miss.getEnd(),lineNo);
 
 			context.getProblemReporter().reportProblem(problem);
 
-		} catch (ModelException e) {
-			e.printStackTrace();
 		}
 	}
 }

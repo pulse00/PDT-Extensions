@@ -4,12 +4,12 @@ import org.eclipse.dltk.ast.declarations.ModuleDeclaration;
 import org.eclipse.dltk.core.IMethod;
 import org.eclipse.dltk.core.IModelElement;
 import org.eclipse.dltk.core.ISourceModule;
-import org.eclipse.dltk.core.ISourceRange;
-import org.eclipse.dltk.core.IType;
 import org.eclipse.dltk.core.SourceParserUtil;
 import org.eclipse.dltk.internal.core.ModelElement;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
+import org.eclipse.jface.text.TextUtilities;
+import org.eclipse.php.internal.core.format.FormatPreferencesSupport;
 import org.eclipse.php.internal.ui.editor.PHPStructuredEditor;
 import org.eclipse.php.internal.ui.editor.PHPStructuredTextViewer;
 import org.eclipse.php.internal.ui.editor.contentassist.PHPCompletionProposal;
@@ -17,9 +17,20 @@ import org.eclipse.php.internal.ui.editor.contentassist.UseStatementInjector;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import com.dubture.pdt.core.PDTVisitor;
+import com.dubture.pdt.core.compiler.MissingMethodImplementation;
+import com.dubture.pdt.core.visitor.PDTVisitor;
+import com.dubture.pdt.ui.PDTPluginImages;
+import com.dubture.pdt.ui.PDTUIPlugin;
 import com.dubture.pdt.ui.codemanipulation.CodeGeneration;
 
+/**
+ *
+ * A completion proposal which generates unimplemented interface methods
+ * into the class body.
+ * 
+ * @author Robert Gruendler <r.gruendler@gmail.com>
+ *
+ */
 @SuppressWarnings("restriction")
 public class InterfaceMethodCompletionProposal extends PHPCompletionProposal {
 
@@ -31,7 +42,12 @@ public class InterfaceMethodCompletionProposal extends PHPCompletionProposal {
 
 	}
 	
-	
+	@Override
+	public Image getImage() {
+
+		return PDTUIPlugin.getImageDescriptorRegistry().get(PDTPluginImages.DESC_CORRECTION_CHANGE);
+		
+	}
 
 	@Override
 	public void apply(ITextViewer viewer, char trigger, int stateMask,
@@ -55,26 +71,27 @@ public class InterfaceMethodCompletionProposal extends PHPCompletionProposal {
 						return;
 					}
 
-					IType[] types = sourceModule.getTypes();
-					IType type = types[0];
-					
-					
 					ModuleDeclaration module = SourceParserUtil.getModuleDeclaration(sourceModule);
 					PDTVisitor visitor = new PDTVisitor(sourceModule);
 					module.traverse(visitor);
 					
 					String code = "";
+										
+					char indentChar = FormatPreferencesSupport.getInstance().getIndentationChar(document);
+					String indent = String.valueOf(indentChar);
 					
-					for (IMethod method : visitor.getUnimplementedMethods()) {
-						code += CodeGeneration.getMethodStub(method.getParent().getElementName(), method, "\t", "\n", false);
-					}
-					
-					ISourceRange range = type.getSourceRange();					
-					document.replace(range.getOffset() + range.getLength()-2, 0, code);
-					
-					UseStatementInjector injector = new UseStatementInjector(this);
-					injector.inject(document, getTextViewer(), range.getOffset());
-					
+					for (MissingMethodImplementation miss : visitor.getUnimplementedMethods()) {
+						
+						for (IMethod method : miss.getMisses()) {
+							code += CodeGeneration.getMethodStub(method.getParent().getElementName(), method, indent, TextUtilities.getDefaultLineDelimiter(document), false);
+						}
+											
+						document.replace(miss.getInjectionOffset(), 0, code);
+						
+						UseStatementInjector injector = new UseStatementInjector(this);
+						injector.inject(document, getTextViewer(), offset);
+						
+					}					
 					
 				} catch (Exception e) {
 					e.printStackTrace();
