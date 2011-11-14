@@ -74,6 +74,18 @@
             id="com.dubture.pdt.ui.quickFixProcessor">
       </quickFixProcessor>
    </extension>
+   <extension
+         id="com.dubture.pdt.ui.scriptCompletionProposalComputer"
+         point="org.eclipse.dltk.ui.scriptCompletionProposalComputer">
+      <scriptCompletionProposalComputer
+            categoryId="org.eclipse.dltk.ui.scriptTypeProposalCategory"
+            class="com.dubture.pdt.ui.contentassist.ScriptCompletionProposalComputer"
+            toolkitId="org.eclipse.php.core.PHPNature">
+         <partition
+               type="org.eclipse.php.PHP_DEFAULT">
+         </partition>
+      </scriptCompletionProposalComputer>
+   </extension>
    
 
 </plugin>
