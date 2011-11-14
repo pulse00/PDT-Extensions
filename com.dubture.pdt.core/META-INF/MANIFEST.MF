@@ -16,6 +16,5 @@ Export-Package: com.dubture.pdt.core,
  com.dubture.pdt.core.builder,
  com.dubture.pdt.core.codeassist,
  com.dubture.pdt.core.compiler,
- com.dubture.pdt.core.model,
  com.dubture.pdt.core.util,
  com.dubture.pdt.core.visitor

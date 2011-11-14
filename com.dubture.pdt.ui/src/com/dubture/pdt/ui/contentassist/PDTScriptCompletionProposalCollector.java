@@ -9,6 +9,7 @@
 package com.dubture.pdt.ui.contentassist;
 
 import org.eclipse.dltk.core.CompletionProposal;
+import org.eclipse.dltk.core.IMethod;
 import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.ui.text.completion.IScriptCompletionProposal;
 import org.eclipse.dltk.ui.text.completion.ScriptCompletionProposal;
@@ -17,7 +18,6 @@ import org.eclipse.php.internal.ui.editor.contentassist.PHPCompletionProposalCol
 import org.eclipse.swt.graphics.Image;
 
 import com.dubture.pdt.core.codeassist.PDTCompletionInfo;
-import com.dubture.pdt.core.model.SuperclassMethod;
 
 /**
  *
@@ -55,10 +55,11 @@ public class PDTScriptCompletionProposalCollector extends
 		Image image = getImage(getLabelProvider().createTypeImageDescriptor(proposal));
 		String displayString = (getLabelProvider()).createLabel(proposal);
 
-		ScriptCompletionProposal scriptProposal = new SuperclassMethodCompletionProposal(completion, replaceStart, length, image, displayString, 0);
+		SuperclassMethodCompletionProposal scriptProposal = new SuperclassMethodCompletionProposal(completion, replaceStart, length, image, displayString, 0);
 
+		scriptProposal.setMethod((IMethod) proposal.getModelElement());
 		scriptProposal.setRelevance(computeRelevance(proposal));
-		//			scriptProposal.setProposalInfo(new BundleProposalInfo(getSourceModule().getScriptProject(), typeProposal));
+//		scriptProposal.setProposalInfo(new BundleProposalInfo(getSourceModule().getScriptProject(), typeProposal));
 
 		return scriptProposal;
 
