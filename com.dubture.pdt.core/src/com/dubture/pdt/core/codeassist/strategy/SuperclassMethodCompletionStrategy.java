@@ -85,7 +85,7 @@ public class SuperclassMethodCompletionStrategy extends
 					if (CodeAssistUtils.startsWithIgnoreCase(method.getElementName(), prefix) && 
 							(!PHPFlags.isPrivate(method.getFlags())) ) {
 												
-						reporter.reportMethod(method, "", range, new PDTCompletionInfo());
+						reporter.reportMethod(method, "", range, new PDTCompletionInfo(module));
 					}
 				}				
 			}

@@ -8,9 +8,22 @@
  ******************************************************************************/
 package com.dubture.pdt.core.codeassist;
 
+import org.eclipse.dltk.core.ISourceModule;
+
 /**
  *
  */
 public class PDTCompletionInfo {
+	
+	private final ISourceModule source;
+	
+	public PDTCompletionInfo(ISourceModule sourcemodule) {
+		
+		this.source = sourcemodule;
+	}
+
+	public ISourceModule getSource() {
+		return source;
+	}
 
 }

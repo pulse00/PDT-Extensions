@@ -47,7 +47,7 @@ public class PDTScriptCompletionProposalCollector extends
 		if ( !(info instanceof PDTCompletionInfo) )
 			return null;
 						
-		System.err.println("create");
+		PDTCompletionInfo additional = (PDTCompletionInfo) info;
 		String completion = new String(proposal.getCompletion());
 		int replaceStart = proposal.getReplaceStart();
 		int length = getLength(proposal);
@@ -56,7 +56,7 @@ public class PDTScriptCompletionProposalCollector extends
 
 		
 		SuperclassMethodCompletionProposal scriptProposal = new SuperclassMethodCompletionProposal(completion, 
-				replaceStart, length, image, displayString, 0, (IMethod) proposal.getModelElement());
+				replaceStart, length, image, displayString, 0, (IMethod) proposal.getModelElement(), additional.getSource());
 
 
 		scriptProposal.setRelevance(Integer.MAX_VALUE);		

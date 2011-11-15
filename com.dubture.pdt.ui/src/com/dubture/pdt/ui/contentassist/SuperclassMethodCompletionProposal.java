@@ -8,8 +8,10 @@
  */
 package com.dubture.pdt.ui.contentassist;
 
+
 import org.eclipse.dltk.core.IMethod;
 import org.eclipse.dltk.core.IModelElement;
+import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.TextUtilities;
@@ -29,6 +31,7 @@ import com.dubture.pdt.ui.codemanipulation.CodeGeneration;
 public class SuperclassMethodCompletionProposal extends PHPCompletionProposal {
 
 	private final IMethod method;
+	private final ISourceModule source;
 	private boolean replacementComputed = false;
 	
 
@@ -40,14 +43,16 @@ public class SuperclassMethodCompletionProposal extends PHPCompletionProposal {
 	 * @param displayString
 	 * @param relevance
 	 * @param iMethod 
+	 * @param iSourceModule 
 	 */
 	public SuperclassMethodCompletionProposal(String replacementString,
 			int replacementOffset, int replacementLength, Image image,
-			String displayString, int relevance, IMethod iMethod) {
+			String displayString, int relevance, IMethod iMethod, ISourceModule iSourceModule) {
 		super(replacementString, replacementOffset, replacementLength, image,
 				displayString, relevance);
 		
 		method = iMethod;
+		source = iSourceModule;
 
 	}
 
@@ -62,6 +67,26 @@ public class SuperclassMethodCompletionProposal extends PHPCompletionProposal {
 			return computeReplacementString();
 		}
 		return super.getReplacementString();
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.eclipse.dltk.ui.text.completion.AbstractScriptCompletionProposal#apply(org.eclipse.jface.text.ITextViewer, char, int, int)
+	 */
+	@Override
+	public void apply(final ITextViewer viewer, char trigger, int stateMask,
+			int offset) {
+
+		super.apply(viewer, trigger, stateMask, offset);
+		
+		// usestatement injection must be added manually,
+		// as the PDT injector uses the model element from the proposal
+		// to inject the statements. in this case, the modelelement
+		// is the method from the parent class, so nothing is being 
+		// injected...
+		
+//		final UseStatementInjector injector = new UseStatementInjector(this);
+		
+
 	}
 
 	private String computeReplacementString() {
