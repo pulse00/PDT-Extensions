@@ -28,9 +28,9 @@ import com.dubture.pdt.ui.codemanipulation.CodeGeneration;
 @SuppressWarnings("restriction")
 public class SuperclassMethodCompletionProposal extends PHPCompletionProposal {
 
-	private IMethod method;
-
-
+	private final IMethod method;
+	private boolean replacementComputed = false;
+	
 
 	/**
 	 * @param replacementString
@@ -39,30 +39,39 @@ public class SuperclassMethodCompletionProposal extends PHPCompletionProposal {
 	 * @param image
 	 * @param displayString
 	 * @param relevance
+	 * @param iMethod 
 	 */
 	public SuperclassMethodCompletionProposal(String replacementString,
 			int replacementOffset, int replacementLength, Image image,
-			String displayString, int relevance) {
+			String displayString, int relevance, IMethod iMethod) {
 		super(replacementString, replacementOffset, replacementLength, image,
 				displayString, relevance);
-		// TODO Auto-generated constructor stub
+		
+		method = iMethod;
+
 	}
 
 
-
 	/* (non-Javadoc)
-	 * @see org.eclipse.dltk.ui.text.completion.AbstractScriptCompletionProposal#apply(org.eclipse.jface.text.ITextViewer, char, int, int)
+	 * @see org.eclipse.dltk.ui.text.completion.AbstractScriptCompletionProposal#getReplacementString()
 	 */
 	@Override
-	public void apply(ITextViewer viewer, char trigger, int stateMask,
-			int offset) {
+	public String getReplacementString() {
+	
+		if (!replacementComputed) {
+			return computeReplacementString();
+		}
+		return super.getReplacementString();
+	}
 
+	private String computeReplacementString() {
+
+		ITextViewer viewer = getTextViewer();
 		IDocument document = viewer.getDocument();
 		ITextEditor textEditor = ((PHPStructuredTextViewer) viewer)
 				.getTextEditor();
 
 		try {
-
 
 			if (textEditor instanceof PHPStructuredEditor) {
 				IModelElement editorElement = ((PHPStructuredEditor) textEditor)
@@ -73,8 +82,8 @@ public class SuperclassMethodCompletionProposal extends PHPCompletionProposal {
 					String indent = String.valueOf(indentChar);
 
 					String code = "";
-					code += CodeGeneration.getMethodStub(method.getParent().getElementName(), method, indent, TextUtilities.getDefaultLineDelimiter(document), false);
-					document.replace(offset, 0, code);
+					code += CodeGeneration.getMethodStub(method.getElementName(), method, indent, TextUtilities.getDefaultLineDelimiter(document), true);
+					return code;
 
 				}
 			}		
@@ -82,18 +91,8 @@ public class SuperclassMethodCompletionProposal extends PHPCompletionProposal {
 		} catch (Exception e) {
 
 			e.printStackTrace();
-		}
-	}
-
-
-
-	/**
-	 * @param modelElement
-	 */
-	public void setMethod(IMethod modelElement) {
-
-		this.method = modelElement;
+		}		
 		
+		return "";
 	}
-
 }

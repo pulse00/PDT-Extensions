@@ -20,6 +20,8 @@ import org.eclipse.dltk.internal.core.SourceRange;
 import org.eclipse.dltk.internal.core.SourceType;
 import org.eclipse.php.core.codeassist.ICompletionContext;
 import org.eclipse.php.core.codeassist.ICompletionStrategy;
+import org.eclipse.php.core.compiler.PHPFlags;
+import org.eclipse.php.internal.core.codeassist.CodeAssistUtils;
 import org.eclipse.php.internal.core.codeassist.ICompletionReporter;
 import org.eclipse.php.internal.core.codeassist.strategies.AbstractCompletionStrategy;
 import org.eclipse.php.internal.core.model.PhpModelAccess;
@@ -28,7 +30,8 @@ import com.dubture.pdt.core.codeassist.PDTCompletionInfo;
 import com.dubture.pdt.core.codeassist.context.SuperclassMethodContext;
 
 /**
- *
+ * Completionstrategy to insert method stubs from superclasses.
+ * 
  */
 @SuppressWarnings({ "restriction", "deprecation" })
 public class SuperclassMethodCompletionStrategy extends
@@ -62,23 +65,30 @@ public class SuperclassMethodCompletionStrategy extends
 			}
 		}
 		
-		if (element == null || !(element instanceof SourceType)) {
-			
+		if (element == null || !(element instanceof SourceType)) {			
 			return;
 		}
 		
 		IDLTKSearchScope scope = SearchEngine.createSearchScope(module.getScriptProject());		
 		SourceType type = (SourceType) element;
 		SourceRange range = getReplacementRange(context);
+		String prefix = context.getPrefix();
 		
 		for (String sClass : type.getSuperClasses()) {			
 			IType[] superTypes = PhpModelAccess.getDefault().findTypes(sClass, MatchRule.EXACT, 0, 0, scope, new NullProgressMonitor());			
-			for (IType superType : superTypes) {			
-				for (IMethod method : superType.getMethods()) {		
-					
-					reporter.reportMethod(method, "", range, new PDTCompletionInfo());
+			for (IType superType : superTypes) {
+				
+				if (PHPFlags.isInterface(superType.getFlags()))
+					continue;
+				
+				for (IMethod method : superType.getMethods()) {												
+					if (CodeAssistUtils.startsWithIgnoreCase(method.getElementName(), prefix) && 
+							(!PHPFlags.isPrivate(method.getFlags())) ) {
+												
+						reporter.reportMethod(method, "", range, new PDTCompletionInfo());
+					}
 				}				
 			}
-		}		
+		}
 	}
 }

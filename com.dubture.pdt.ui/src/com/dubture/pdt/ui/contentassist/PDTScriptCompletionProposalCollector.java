@@ -12,7 +12,7 @@ import org.eclipse.dltk.core.CompletionProposal;
 import org.eclipse.dltk.core.IMethod;
 import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.ui.text.completion.IScriptCompletionProposal;
-import org.eclipse.dltk.ui.text.completion.ScriptCompletionProposal;
+import org.eclipse.dltk.ui.text.completion.MethodProposalInfo;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.php.internal.ui.editor.contentassist.PHPCompletionProposalCollector;
 import org.eclipse.swt.graphics.Image;
@@ -43,28 +43,27 @@ public class PDTScriptCompletionProposalCollector extends
 			CompletionProposal proposal) {
 		
 		Object info = proposal.getExtraInfo();
-		
-		
-		if ( !(info instanceof PDTCompletionInfo) )
-			return super.createScriptCompletionProposal(proposal);
 				
-		
+		if ( !(info instanceof PDTCompletionInfo) )
+			return null;
+						
+		System.err.println("create");
 		String completion = new String(proposal.getCompletion());
 		int replaceStart = proposal.getReplaceStart();
 		int length = getLength(proposal);
 		Image image = getImage(getLabelProvider().createTypeImageDescriptor(proposal));
 		String displayString = (getLabelProvider()).createLabel(proposal);
 
-		SuperclassMethodCompletionProposal scriptProposal = new SuperclassMethodCompletionProposal(completion, replaceStart, length, image, displayString, 0);
+		
+		SuperclassMethodCompletionProposal scriptProposal = new SuperclassMethodCompletionProposal(completion, 
+				replaceStart, length, image, displayString, 0, (IMethod) proposal.getModelElement());
 
-		scriptProposal.setMethod((IMethod) proposal.getModelElement());
-		scriptProposal.setRelevance(computeRelevance(proposal));
-//		scriptProposal.setProposalInfo(new BundleProposalInfo(getSourceModule().getScriptProject(), typeProposal));
+
+		scriptProposal.setRelevance(Integer.MAX_VALUE);		
+		scriptProposal.setProposalInfo(new MethodProposalInfo(getScriptProject(), proposal));
 
 		return scriptProposal;
 
 		
 	}
-
-
 }

@@ -31,16 +31,11 @@ import com.dubture.pdt.ui.contentassist.InterfaceMethodCompletionProposal;
 
 /**
  * 
- * 
- * @author Robert Gruendler <r.gruendler@gmail.com>
+ * Provides quick fixes for missing interface methods.
  *
  */
 @SuppressWarnings("restriction")
 public class InterfaceMethodQuickFixProcessor implements IQuickFixProcessor {
-
-	public InterfaceMethodQuickFixProcessor() {
-
-	}
 
 	@Override
 	public boolean hasCorrections(ISourceModule unit, int problemId)
