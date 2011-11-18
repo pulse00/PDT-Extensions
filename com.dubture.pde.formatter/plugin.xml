@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.php.ui.phpFormatterPrefBlock">
+      <block
+            class="com.dubture.pde.formatter.preferences.PDTFormatterConfigurationBlockWrapper"
+            id="com.dubture.pde.formatter.block1"
+            name="com.dubture.pde.formatter.block1">
+      </block>
+   </extension>
+   
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.php.ui.preferences.CodeStylePreferencePage"
+            class="com.dubture.pde.formatter.internal.ui.preferences.CodeFormatterPreferencePage"
+            id="jp.sourceforge.pdt_tools.formatter.ui.preferences.CodeFormatterPreferencePage"
+            name="Formatter (PDT Tools)">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            category="org.eclipse.php.ui.propertyPages.CodeStylePreferencePage"
+            class="com.dubture.pde.formatter.internal.ui.preferences.CodeFormatterPreferencePage"
+            id="jp.sourceforge.pdt_tools.formatter.ui.propertyPages.CodeFormatterPropertyPage"
+            name="Formatter (PDT Tools)">
+         <enabledWhen>
+            <adapt
+                  type="org.eclipse.dltk.core.IScriptProject">
+            </adapt>
+         </enabledWhen>
+      </page>
+   </extension>
+   
+   <extension
+         point="org.eclipse.php.ui.phpFormatterProcessor">
+         <processor class="com.dubture.pde.formatter.core.ast.Formatter"
+            id="jp.sourceforge.pdt_tools.formatter.core.ast.Formatter"
+            name="pdt_tools.formatter"/>
+   </extension>
+   
+   <extension
+         id="jp.sourceforge.pdt_tools.formatter.problem"
+         name="PHP Formatting Problem"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="com.dubture.pde.formatter.internal.ui.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>   
+   
+
+</plugin>
