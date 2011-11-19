@@ -128,8 +128,10 @@ public class Formatter implements IContentFormatter {
 		}
 		
 		program = null;
-		String toFormat = document.get().substring(region.getOffset(), 
-				region.getOffset() + region.getLength());
+//		String toFormat = document.get().substring(region.getOffset(), 
+//				region.getOffset() + region.getLength());
+		
+		String toFormat = document.get();		
 		
 		try {
 			ASTParser parser = ASTParser.newParser(
@@ -144,9 +146,9 @@ public class Formatter implements IContentFormatter {
 			return;
 		}
 		
-		IDocument tmp = createPHPDocument();		
-		tmp.set(toFormat);
-		holder = new TokenHolder(tmp, project);
+//		IDocument tmp = createPHPDocument();		
+//		tmp.set(toFormat);
+		holder = new TokenHolder(document, project);
 		if (holder == null) {
 			error(file, "Could not get Tokens");
 			return;
@@ -155,7 +157,6 @@ public class Formatter implements IContentFormatter {
 		
 		formatter = new ASTFormatter(program, holder, options);
 		String result = formatter.format();
-		System.err.println(result);
 		if (result == null) {
 			error(file, "Could not format (ast error)");
 			return;
@@ -164,22 +165,22 @@ public class Formatter implements IContentFormatter {
 			document.set(result);
 			return;
 		}
-		if (tmp.get().equals(result)) {
+		if (document.get().equals(result)) {
 			return;
 		}
 		IDocument formatted = createPHPDocument();
 		formatted.set(result);
 //		System.err.println(region.getOffset() + " " + region.getLength());
 //		System.err.println(result);
-		if (TokenHolder.verify(tmp, formatted, project)) {			
+		if (TokenHolder.verify(document, formatted, project)) {			
 			
 			
-			try {
-				document.replace(region.getOffset(), region.getLength(), result);
-			} catch (BadLocationException e1) {
-				e1.printStackTrace();
-			}
-//			document.set(result);
+//			try {
+//				document.replace(region.getOffset(), region.getLength(), result);
+//			} catch (BadLocationException e1) {
+//				e1.printStackTrace();
+//			}
+			document.set(result);
 			
 			
 			if (createMarker) {

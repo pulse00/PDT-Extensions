@@ -32,6 +32,7 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.fieldassist.AutoCompleteField;
 import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -60,6 +61,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
+import com.dubture.pde.formatter.core.ast.Formatter;
 import com.dubture.pdt.ui.ExtensionManager;
 import com.dubture.pdt.ui.PDTPluginImages;
 import com.dubture.pdt.ui.codemanipulation.CodeGeneration;
@@ -697,7 +699,12 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		String content = CodeGeneration.getClassStub(getScriptFolder().getScriptProject(), filename, 
 				namespace, modifier, superclass, interfaces, generateConstructor, generateAbstract, generateComments);
 		
-		return content;
+		IDocument doc = Formatter.createPHPDocument();
+		Formatter formatter = new Formatter();		
+		doc.set(content);
+		formatter.format(doc);		
+		return doc.get();
+		
 	}
 	
 }
