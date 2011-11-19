@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
 <plugin>
+
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.eclipse.ui.preferencePages.GeneralTextEditor"
+            class="com.dubture.pde.formatter.internal.ui.preferences.IndentGuidePreferencePage"
+            id="jp.sourceforge.pdt_tools.indentguide.preferences.PreferencePage"
+            name="%indentpage.name">
+      </page>
+   </extension>
+
    <extension
          point="org.eclipse.php.ui.phpFormatterPrefBlock">
       <block
@@ -16,7 +27,7 @@
             category="org.eclipse.php.ui.preferences.CodeStylePreferencePage"
             class="com.dubture.pde.formatter.internal.ui.preferences.CodeFormatterPreferencePage"
             id="jp.sourceforge.pdt_tools.formatter.ui.preferences.CodeFormatterPreferencePage"
-            name="Formatter (PDT Tools)">
+            name="%page.name">
       </page>
    </extension>
    <extension
@@ -25,7 +36,7 @@
             category="org.eclipse.php.ui.propertyPages.CodeStylePreferencePage"
             class="com.dubture.pde.formatter.internal.ui.preferences.CodeFormatterPreferencePage"
             id="jp.sourceforge.pdt_tools.formatter.ui.propertyPages.CodeFormatterPropertyPage"
-            name="Formatter (PDT Tools)">
+            name="%page.name.0">
          <enabledWhen>
             <adapt
                   type="org.eclipse.dltk.core.IScriptProject">
@@ -43,7 +54,7 @@
    
    <extension
          id="jp.sourceforge.pdt_tools.formatter.problem"
-         name="PHP Formatting Problem"
+         name="%extension.name"
          point="org.eclipse.core.resources.markers">
       <super
             type="org.eclipse.core.resources.problemmarker">
@@ -58,6 +69,13 @@
             class="com.dubture.pde.formatter.internal.ui.preferences.PreferenceInitializer">
       </initializer>
    </extension>   
+
+	<extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="com.dubture.pde.formatter.Starter">
+      </startup>
+   </extension>
    
 
 </plugin>

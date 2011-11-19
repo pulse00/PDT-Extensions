@@ -324,11 +324,10 @@ public class GenerateGettersHandler extends SelectionHandler implements
 
 			
 		}						
+		
 		document.replace(end, 0, methods);
 		
 		Formatter formatter = new Formatter();
-		formatter.format(document);
-		
 		Region region = new Region(end, methods.length()); 
 		formatter.format(document, region);		
 		

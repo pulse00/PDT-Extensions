@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.swt.SWT;
 
 import com.dubture.pde.formatter.FormatterPlugin;
 import com.dubture.pde.formatter.internal.core.formatter.CodeFormatterConstants;
@@ -25,5 +26,16 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 			String key = (String) it.next();
 			store.setDefault(key, (String) map.get(key));
 		}
+		
+		store.setDefault(PreferenceConstants.ENABLED, true);
+		store.setDefault(PreferenceConstants.LINE_ALPHA, 50);
+		store.setDefault(PreferenceConstants.LINE_STYLE, SWT.LINE_SOLID);
+		store.setDefault(PreferenceConstants.LINE_WIDTH, 1);
+		store.setDefault(PreferenceConstants.LINE_SHIFT, 3);
+		store.setDefault(PreferenceConstants.LINE_COLOR, "0,0,0"); //$NON-NLS-1$
+		store.setDefault(PreferenceConstants.DRAW_LEFT_END, true); //$NON-NLS-1$
+		store.setDefault(PreferenceConstants.DRAW_BLANK_LINE, false); //$NON-NLS-1$
+		store.setDefault(PreferenceConstants.SKIP_COMMENT_BLOCK, false); //$NON-NLS-1$
+		
 	}
 }

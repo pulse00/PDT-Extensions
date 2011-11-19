@@ -22,14 +22,18 @@ import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.php.internal.core.ast.nodes.ASTNode;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.editors.text.EditorsUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.texteditor.ChainedPreferenceStore;
+import org.eclipse.ui.themes.ColorUtil;
 import org.eclipse.wst.sse.core.StructuredModelManager;
 import org.eclipse.wst.sse.core.internal.provisional.IStructuredModel;
 import org.osgi.framework.BundleContext;
 
 import com.dubture.pde.formatter.internal.core.formatter.CodeFormatterOptions;
+import com.dubture.pde.formatter.internal.ui.preferences.PreferenceConstants;
 
 public class FormatterPlugin extends AbstractUIPlugin {
 
@@ -49,6 +53,10 @@ public class FormatterPlugin extends AbstractUIPlugin {
 	private static FormatterPlugin plugin;
 
 	private IPreferenceStore fCombinedPreferenceStore;
+	
+	// Line color resource
+	private Color color;
+	
 
 	public FormatterPlugin() {
 	}
@@ -167,4 +175,22 @@ public class FormatterPlugin extends AbstractUIPlugin {
 		} catch (CoreException e) {
 		}
 	}
+	
+	public Color getColor() {
+		if (color == null) {
+			String colorString = getPreferenceStore().getString(
+					PreferenceConstants.LINE_COLOR);
+			color = new Color(PlatformUI.getWorkbench().getDisplay(),
+					ColorUtil.getColorValue(colorString));
+		}
+		return color;
+	}
+
+	public void setColor(Color color) {
+		if (this.color != null) {
+			this.color.dispose();
+		}
+		this.color = color;
+	}
+	
 }

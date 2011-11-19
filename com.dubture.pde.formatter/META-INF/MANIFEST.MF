@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Formatter
+Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.dubture.pde.formatter;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: com.dubture.pde.formatter.FormatterPlugin
-Bundle-Vendor: DUBTURE
+Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.ui,

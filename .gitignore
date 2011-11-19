@@ -5,3 +5,6 @@ com.dubture.pdt.test/bin/*
 com.dubture.pdt.core/target/*
 com.dubture.pdt.ui/target/*
 com.dubture.pdt.test/target/*
+
+com.dubture.pde.formatter/bin/*
+com.dubture.pde.formatter/target/*
