@@ -1,3 +1,4 @@
 .DS_Store
 com.dubture.pdt.core/bin/*
 com.dubture.pdt.ui/bin/*
+com.dubture.pdt.test/bin/*
