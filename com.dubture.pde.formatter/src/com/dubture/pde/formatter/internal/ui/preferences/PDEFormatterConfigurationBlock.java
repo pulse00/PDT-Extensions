@@ -6,7 +6,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-package com.dubture.pde.formatter.preferences;
+package com.dubture.pde.formatter.internal.ui.preferences;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.php.internal.ui.preferences.IStatusChangeListener;

@@ -15,7 +15,7 @@
    <extension
          point="org.eclipse.php.ui.phpFormatterPrefBlock">
       <block
-            class="com.dubture.pde.formatter.preferences.PDTFormatterConfigurationBlockWrapper"
+            class="com.dubture.pde.formatter.internal.ui.preferences.PDTFormatterConfigurationBlockWrapper"
             id="com.dubture.pde.formatter.block1"
             name="com.dubture.pde.formatter.block1">
       </block>
