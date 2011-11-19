@@ -1,5 +1,7 @@
 # An extension to the Eclipse PHP Development Tools.
 
+Code formatter is based on the [PDT Tools](http://en.sourceforge.jp/projects/pdt-tools/) by [atlanto](http://en.sourceforge.jp/users/atlanto/)
+
 ## Update Site and project page
 
 http://pulse00.github.com/PDT-Extensions/
