@@ -34,6 +34,7 @@ import org.eclipse.dltk.internal.core.SourceType;
 import org.eclipse.dltk.ui.DLTKPluginImages;
 import org.eclipse.dltk.ui.DLTKUIPlugin;
 import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextUtilities;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -56,6 +57,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.texteditor.ITextEditor;
 
+import com.dubture.pde.formatter.core.ast.Formatter;
 import com.dubture.pdt.ui.dialog.GetterSetterDialog;
 import com.dubture.pdt.ui.util.GetterSetterUtil;
 
@@ -323,6 +325,13 @@ public class GenerateGettersHandler extends SelectionHandler implements
 			
 		}						
 		document.replace(end, 0, methods);
+		
+		Formatter formatter = new Formatter();
+		formatter.format(document);
+		
+		Region region = new Region(end, methods.length()); 
+		formatter.format(document, region);		
+		
 	}
 	
 	private String indentPattern(String originalPattern, String indentation,
