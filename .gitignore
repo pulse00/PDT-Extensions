@@ -2,3 +2,6 @@
 com.dubture.pdt.core/bin/*
 com.dubture.pdt.ui/bin/*
 com.dubture.pdt.test/bin/*
+com.dubture.pdt.core/target/*
+com.dubture.pdt.ui/target/*
+com.dubture.pdt.test/target/*
