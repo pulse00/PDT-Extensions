@@ -26,4 +26,5 @@ public class CodeGenerationTests extends TestCase {
 			fail();
 		}		
 	}
+	
 }

@@ -27,7 +27,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 			store.setDefault(key, (String) map.get(key));
 		}
 		
-		store.setDefault(PreferenceConstants.ENABLED, true);
+		store.setDefault(PreferenceConstants.ENABLED, false);
 		store.setDefault(PreferenceConstants.LINE_ALPHA, 50);
 		store.setDefault(PreferenceConstants.LINE_STYLE, SWT.LINE_SOLID);
 		store.setDefault(PreferenceConstants.LINE_WIDTH, 1);
