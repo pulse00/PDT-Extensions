@@ -15,15 +15,20 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.dltk.ast.declarations.MethodDeclaration;
 import org.eclipse.dltk.ast.declarations.ModuleDeclaration;
 import org.eclipse.dltk.ast.references.SimpleReference;
 import org.eclipse.dltk.ast.references.TypeReference;
 import org.eclipse.dltk.core.IMethod;
 import org.eclipse.dltk.core.IParameter;
+import org.eclipse.dltk.core.IScriptProject;
 import org.eclipse.dltk.core.IType;
 import org.eclipse.dltk.core.ModelException;
 import org.eclipse.dltk.core.SourceParserUtil;
+import org.eclipse.dltk.core.index2.search.ISearchEngine.MatchRule;
+import org.eclipse.dltk.core.search.IDLTKSearchScope;
+import org.eclipse.dltk.core.search.SearchEngine;
 import org.eclipse.dltk.evaluation.types.MultiTypeType;
 import org.eclipse.dltk.ti.types.IEvaluatedType;
 import org.eclipse.php.core.compiler.PHPFlags;
@@ -34,6 +39,7 @@ import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTag;
 import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTagKinds;
 import org.eclipse.php.internal.core.compiler.ast.nodes.UsePart;
 import org.eclipse.php.internal.core.index.IPHPDocAwareElement;
+import org.eclipse.php.internal.core.model.PhpModelAccess;
 import org.eclipse.php.internal.core.typeinference.PHPClassType;
 import org.eclipse.php.internal.core.typeinference.PHPModelUtils;
 import org.eclipse.php.internal.core.typeinference.PHPSimpleTypes;
@@ -280,11 +286,10 @@ public class PDTModelUtils {
 		String methodSignature = method.getElementName();
 		
 		try {
-			for (IParameter param: method.getParameters()) {
-
+			for (IParameter param: method.getParameters()) {				
 				try {
 					
-					if (param.getType() != null) {										
+					if (isValidType(param.getType(), method.getScriptProject())) {										
 						methodSignature += param.getType();										
 					}
 					
@@ -300,6 +305,23 @@ public class PDTModelUtils {
 		
 		
 	}	
+
+	public static boolean isValidType(String type, IScriptProject project) {
 		
+		if (type == null)
+			return false;
+		
+		IDLTKSearchScope scope = SearchEngine.createSearchScope(project);
+		IType[] types = PhpModelAccess.getDefault().findTypes(type, MatchRule.EXACT, 0, 0, 
+				scope, new NullProgressMonitor());
+		
+		if (types.length > 0)
+			return true;
+		
+		return false;
+		
+		
+	}
+	
 
 }
