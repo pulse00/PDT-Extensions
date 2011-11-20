@@ -1,0 +1,5 @@
+1.0.2
+
+- Integrated the PDT Tool Advanced formatter
+- Any plugin-generated code is formatted by the current code style profile
+- Added missing interface method validation/generation
