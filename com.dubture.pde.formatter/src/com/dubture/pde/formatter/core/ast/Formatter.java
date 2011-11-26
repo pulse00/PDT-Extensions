@@ -150,7 +150,10 @@ public class Formatter implements IContentFormatter {
 		formatter = new ASTFormatter(program, holder, options);
 		String result = formatter.format();
 		if (result == null) {
-			error(file, "Could not format (ast error)");
+			
+			if (file != null)
+				error(file, "Could not format (ast error)");
+			
 			return;
 		}
 		if (file == null) { // preview for preferences

@@ -30,8 +30,6 @@ import org.eclipse.dltk.ui.wizards.NewSourceModulePage;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
-import org.eclipse.jface.fieldassist.AutoCompleteField;
-import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ISelection;
@@ -80,6 +78,7 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 	protected Label superClassLabel;
 	
 	private String filename = "";	
+	private String className = "";
 	private String sClass = "";
 	private String namespace = "";
 	private String modifier = "";
@@ -93,6 +92,8 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 	private TableViewer interfaceTable;	
 	private Button abstractCheckbox;
 	private Button finalCheckbox;
+	
+	protected boolean isPEAR;	
 	
 	public ClassCreationWizardPage(final ISelection selection, String initialFileName) {
 
@@ -166,6 +167,7 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 	};
 	
 	
+	
 	private SelectionListener superClassSelectionListener  = new SelectionListener() {
 		
 		@Override
@@ -190,9 +192,18 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 							return;
 						
 						superclass += type.getParent().getElementName() + "\\";
+						
+						isPEAR = false;
+						if (superclass.endsWith(".php\\")) {
+							superclass = "";
+							isPEAR = true;
+						}
+						
 						superclass += type.getElementName();
 						
+						
 						superClassText.setText(superclass);
+						
 						ClassCreationWizardPage.this.sClass = superclass;
 
 					} catch (Exception x) {
@@ -253,9 +264,9 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 			
 		}
 	};
-	private AutoCompleteField acField;
+//	private AutoCompleteField acField;
 	
-	
+	/*
 	private KeyListener acListener = new KeyListener() {
 		
 		@Override
@@ -283,12 +294,15 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 			
 		}
 	};
-	private ControlDecoration decoration;
+	*/
+//	private ControlDecoration decoration;
 	private Button commentCheckbox;
 	private Label namespaceLabel;
 	private Text namespaceText;
 	private Button superClassConstructors;
 	private Button abstractMethods;
+	private Label filenameLabel;
+	private Text filenameText;
 	
 	@Override
 	protected void createContentControls(Composite composite, int nColumns) {
@@ -302,6 +316,25 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.widthHint = 200;
+		
+		filenameLabel = new Label(container, SWT.NONE);
+		filenameLabel.setText("Filename:");
+		
+		filenameText = new Text(container, SWT.BORDER | SWT.SINGLE);
+		filenameText.setLayoutData(gd);
+		filenameText.addModifyListener(new ModifyListener() {
+			
+			@Override
+			public void modifyText(ModifyEvent e)
+			{
+				filename= filenameText.getText();
+				dialogChanged();
+				
+			}
+		});
+		
+		Label ph3= new Label(container, SWT.None);
+		ph3.setText("");		
 		
 		namespaceLabel = new Label(container, SWT.NONE);
 		namespaceLabel.setText("Namespace:");
@@ -347,7 +380,7 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 			
 			@Override
 			public void keyReleased(KeyEvent e) {
-				sClass = superClassText.getText();				
+				sClass = superClassText.getText();
 			}
 			
 			@Override
@@ -410,7 +443,9 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		fileText.addModifyListener(new ModifyListener() {
 			public void modifyText(final ModifyEvent e) {
 				dialogChanged();
-				filename = fileText.getText();
+				className = fileText.getText();
+				filename = className + ".php";
+				filenameText.setText(filename );
 			}
 		});
 		
@@ -561,7 +596,7 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		
 		final String container = getContainerName();
 		final String fileName = getFileName();
-
+		
 		if (abstractCheckbox.getSelection() && finalCheckbox.getSelection()) {			
 			updateStatus("A class cannot be abstract and final at the same time");
 			return;
@@ -613,7 +648,9 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 
 
 	public String getFileName() {
-		return filename + ".php";
+		
+		return filename;
+	
 	}
 
 	public String getSuperclass() {
@@ -696,7 +733,7 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 			}
 		}
 		
-		String content = CodeGeneration.getClassStub(getScriptFolder().getScriptProject(), filename, 
+		String content = CodeGeneration.getClassStub(getScriptFolder().getScriptProject(), className, 
 				namespace, modifier, superclass, interfaces, generateConstructor, generateAbstract, generateComments);
 		
 		IDocument doc = Formatter.createPHPDocument();
