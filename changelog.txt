@@ -1,3 +1,9 @@
+1.0.3
+
+- added extension point for formatter profiles
+- fixed PEAR classname bug
+- added "Filename" field to class wizard to separate classname from filename
+
 1.0.2
 
 - Integrated the PDT Tool Advanced formatter
