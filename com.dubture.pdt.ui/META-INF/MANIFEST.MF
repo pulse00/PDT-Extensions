@@ -18,7 +18,7 @@ Require-Bundle: org.eclipse.core.runtime,
  com.dubture.pdt.core,
  org.eclipse.wst.sse.core,
  org.eclipse.wst.sse.ui,
- com.dubture.pde.formatter
+ com.dubture.pdt.formatter
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: com.dubture.pdt.ui.extension

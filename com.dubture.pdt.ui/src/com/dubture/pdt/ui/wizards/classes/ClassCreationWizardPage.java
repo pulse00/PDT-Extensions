@@ -59,7 +59,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 
-import com.dubture.pde.formatter.core.ast.Formatter;
+import com.dubture.pdt.formatter.core.ast.Formatter;
 import com.dubture.pdt.ui.ExtensionManager;
 import com.dubture.pdt.ui.PDTPluginImages;
 import com.dubture.pdt.ui.codemanipulation.CodeGeneration;

@@ -25,9 +25,9 @@ import org.eclipse.php.internal.ui.editor.contentassist.UseStatementInjector;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import com.dubture.pde.formatter.core.ast.Formatter;
 import com.dubture.pdt.core.compiler.MissingMethodImplementation;
 import com.dubture.pdt.core.visitor.PDTVisitor;
+import com.dubture.pdt.formatter.core.ast.Formatter;
 import com.dubture.pdt.ui.PDTPluginImages;
 import com.dubture.pdt.ui.PDTUIPlugin;
 import com.dubture.pdt.ui.codemanipulation.CodeGeneration;

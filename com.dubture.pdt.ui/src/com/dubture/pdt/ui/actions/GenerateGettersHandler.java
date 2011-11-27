@@ -57,7 +57,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import com.dubture.pde.formatter.core.ast.Formatter;
+import com.dubture.pdt.formatter.core.ast.Formatter;
 import com.dubture.pdt.ui.dialog.GetterSetterDialog;
 import com.dubture.pdt.ui.util.GetterSetterUtil;
 

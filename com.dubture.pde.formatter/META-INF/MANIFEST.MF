@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
-Bundle-SymbolicName: com.dubture.pde.formatter;singleton:=true
+Bundle-SymbolicName: com.dubture.pdt.formatter;singleton:=true
 Bundle-Version: 1.0.2.qualifier
-Bundle-Activator: com.dubture.pde.formatter.FormatterPlugin
+Bundle-Activator: com.dubture.pdt.formatter.FormatterPlugin
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
@@ -23,5 +23,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.wst.jsdt.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
-Export-Package: com.dubture.pde.formatter,
- com.dubture.pde.formatter.core.ast
+Export-Package: com.dubture.pdt.formatter,
+ com.dubture.pdt.formatter.core.ast,
+ com.dubture.pdt.formatter.internal.core.formatter,
+ com.dubture.pdt.formatter.internal.ui.preferences.formatter
