@@ -30,6 +30,7 @@ import org.eclipse.dltk.core.index2.search.ISearchEngine.MatchRule;
 import org.eclipse.dltk.core.search.IDLTKSearchScope;
 import org.eclipse.dltk.core.search.SearchEngine;
 import org.eclipse.dltk.evaluation.types.MultiTypeType;
+import org.eclipse.dltk.internal.core.util.LRUCache;
 import org.eclipse.dltk.ti.types.IEvaluatedType;
 import org.eclipse.php.core.compiler.PHPFlags;
 import org.eclipse.php.internal.core.compiler.ast.nodes.FormalParameter;
@@ -56,6 +57,9 @@ public class PDTModelUtils {
 
 	private final static Pattern ARRAY_TYPE_PATTERN = Pattern
 			.compile("array\\[.*\\]");	
+
+	private static LRUCache typeCache = new LRUCache();
+	
 	
 	public static List<IEvaluatedType> collectUseStatements(List<IType> types, boolean includeAbstract) {
 		
@@ -308,20 +312,19 @@ public class PDTModelUtils {
 
 	public static boolean isValidType(String type, IScriptProject project) {
 		
-		if (type == null)
-			return false;
+		String key = type + project.getElementName();
+		
+		if (typeCache.get(key) != null)
+			return (Boolean) typeCache.get(key);
+		
+		if (type == null || "object".equals(type))
+			return (Boolean) typeCache.put(key, new Boolean(false));
 		
 		IDLTKSearchScope scope = SearchEngine.createSearchScope(project);
 		IType[] types = PhpModelAccess.getDefault().findTypes(type, MatchRule.EXACT, 0, 0, 
 				scope, new NullProgressMonitor());
 		
-		if (types.length > 0)
-			return true;
-		
-		return false;
-		
+		return (Boolean) typeCache.put(key, new Boolean(types.length > 0));
 		
 	}
-	
-
 }
