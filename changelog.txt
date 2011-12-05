@@ -1,3 +1,7 @@
+1.0.4
+
+- fixed type check for method parameters
+
 1.0.3
 
 - added extension point for formatter profiles
