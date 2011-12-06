@@ -11,7 +11,8 @@ To support the development you can:
 
 - Class generation wizard
 - Generate getters/setters
-- Generate unimplemented interface methods
+- Generate unimplemented interface methods (use the quickfix in the warning of the classname)
+- Override methods from superclasses (use codeassist in the method body)
 - Advanced code formatting, based on the [PDT Tools](http://en.sourceforge.jp/projects/pdt-tools/) by [atlanto](http://en.sourceforge.jp/users/atlanto/)
 
 
