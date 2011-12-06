@@ -111,7 +111,13 @@ public class CodeGeneration {
 		if (useStatements.size() > 0) {			
 			buffer.append(lineDelim + lineDelim);
 			for (IEvaluatedType useStatement : useStatements) {			
-				buffer.append(String.format("use %s;%s", useStatement.getTypeName(), lineDelim));
+				
+				String typeName = useStatement.getTypeName();
+				
+				if (typeName.startsWith("\\")) {
+					typeName = typeName.replaceFirst("\\\\", "");
+				}
+				buffer.append(String.format("use %s;%s", typeName, lineDelim));
 			}			
 		}
 		

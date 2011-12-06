@@ -99,6 +99,11 @@ public class PDTModelUtils {
 		
 		List<IEvaluatedType> evaluated = new ArrayList<IEvaluatedType>();
 		
+		IScriptProject project = method.getScriptProject();
+		
+		if (project == null)
+			return evaluated;
+		
 		IType currentNamespace = PHPModelUtils.getCurrentNamespace(method);
 		String[] typeNames = null;
 		if (method instanceof IPHPDocAwareElement) {
@@ -119,7 +124,7 @@ public class PDTModelUtils {
 							
 							if (ref instanceof TypeReference) {
 								String type = ref.getName();
-								if (type != null) {
+								if (type != null && isValidType(type, project)) {
 									returnTypeList.add(type);
 								}								
 							}
@@ -195,7 +200,7 @@ public class PDTModelUtils {
 						IEvaluatedType type = getEvaluatedType(typeName,
 								currentNamespace);
 						
-						if (type != null && !evaluated.contains(type.getTypeName()) && !type.getTypeName().startsWith("$")) {							
+						if (type != null && isValidType(typeName, project) && !evaluated.contains(type.getTypeName()) && !type.getTypeName().startsWith("$")) {							
 							evaluated.add(type);
 						}
 					
