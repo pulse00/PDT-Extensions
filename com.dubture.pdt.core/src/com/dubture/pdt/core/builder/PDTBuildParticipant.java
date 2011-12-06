@@ -59,7 +59,7 @@ public class PDTBuildParticipant implements IBuildParticipant {
 		for (MissingMethodImplementation miss : misses) {
 
 			int lineNo = context.getLineTracker().getLineInformationOfOffset(miss.getStart()).getOffset();
-			String message = "The type " + miss.getTypeName() + " must implement the inherited method " + miss.getFirstMethodName();
+			String message = "The type " + miss.getTypeName() + " must implement the inherited method ";
 
 			for (IMethod m : miss.getMisses()) {							
 				message += m.getElementName() + ", ";							

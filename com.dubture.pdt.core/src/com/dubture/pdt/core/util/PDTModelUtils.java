@@ -268,7 +268,7 @@ public class PDTModelUtils {
 	}
 	
 	
-	public static String getMethodSignature(MethodDeclaration method) {
+	public static String getMethodSignature(MethodDeclaration method, IScriptProject project) {
 		
 		String signature = method.getName();
 		
@@ -277,7 +277,8 @@ public class PDTModelUtils {
 			try {
 				FormalParameter param = (FormalParameter) o;
 
-				if (param.getParameterType() != null) {										
+				SimpleReference type = param.getParameterType();
+				if (type != null && isValidType(type.getName(), project)) {
 					signature += param.getParameterType().getName();										
 				}
 				
