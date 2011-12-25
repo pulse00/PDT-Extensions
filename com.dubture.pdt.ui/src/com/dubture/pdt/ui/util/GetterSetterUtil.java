@@ -27,6 +27,8 @@ import org.eclipse.php.internal.core.compiler.ast.nodes.PHPModuleDeclaration;
 import org.eclipse.php.internal.core.compiler.ast.visitor.PHPASTVisitor;
 import org.eclipse.php.ui.CodeGeneration;
 
+import com.dubture.pdt.core.util.PDTModelUtils;
+
 /**
  * 
  * Utility class for getter/setter generation.
@@ -94,8 +96,8 @@ public class GetterSetterUtil {
 				SimpleReference ref = typeParser.getReference();			
 				type = ref.getName();
 				
-				if (builtin.contains(type)) {
-					type = "";
+				if (!PDTModelUtils.isValidType(type, field.getScriptProject())) {
+				    type = "";
 				}
 			}
 			

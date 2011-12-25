@@ -19,6 +19,7 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.php.core.compiler.PHPFlags;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -75,6 +76,9 @@ public class GetterSetterDialog extends CheckedTreeSelectionDialog {
 				try {
 					for (IMethod method : type.getMethods()) {
 				
+					    if (PHPFlags.isStatic(method.getFlags())) {
+					        return false;
+					    }
 						if (entry.isGetter) {							
 							if (method.getElementName().compareToIgnoreCase("get" + entry.getRawFieldName()) == 0) {
 								return false;

@@ -40,6 +40,7 @@ import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
+import org.eclipse.php.core.compiler.PHPFlags;
 import org.eclipse.php.internal.core.PHPCoreConstants;
 import org.eclipse.php.internal.core.PHPCorePlugin;
 import org.eclipse.php.internal.core.ast.nodes.ASTNode;
@@ -408,12 +409,45 @@ public class GenerateGettersHandler extends SelectionHandler implements
 		IField[] fields = type.getFields();
 		Map result = new LinkedHashMap();
 		for (int i = 0; i < fields.length; i++) {
+		    		    
 			IField field = fields[i];
+			
+			int flags = field.getFlags();
+			if (PHPFlags.isStatic(flags) || PHPFlags.isConstant(flags)) {
+			    continue;
+			}
+			
+			String name = field.getElementName().replace("$", "");
+            String getter = "get" + name.toLowerCase();
+            String setter = "set" + name.toLowerCase();
+			
 			List l = new ArrayList(2);
-
-			l.add(new GetterSetterEntry(field, true));
-			l.add(new GetterSetterEntry(field, false));
-
+			List<GetterSetterEntry> entries = new ArrayList<GetterSetterEntry>();
+			
+			boolean getterExists = false;
+			boolean setterExists = false;
+			
+            for (IMethod method : type.getMethods()) {
+                String methodName = method.getElementName().toLowerCase();
+                if (methodName.startsWith("get")) {
+                    getterExists = methodName.equals(getter);    
+                } else if (methodName.startsWith("set")) {
+                    setterExists = methodName.equals(setter);    
+                }
+            }
+			
+            if (!getterExists) {
+                entries.add(new GetterSetterEntry(field, true));
+            }
+            
+            if (!setterExists) {
+                entries.add(new GetterSetterEntry(field, false));
+            }
+            
+            if (entries.size() > 0) {
+                l.addAll(entries);    
+            }
+            
 			if (!l.isEmpty())
 				result.put(field, l.toArray(new GetterSetterEntry[l.size()]));
 
@@ -470,10 +504,17 @@ public class GenerateGettersHandler extends SelectionHandler implements
 			if (name != null)
 				return name;
 			
-			if (isGetter) {			
+			if (isGetter) {
 				return name = String.format("%s()", getIdentifier());
 			} else {
-				return name = String.format("%s(%s)", getIdentifier(), getType());				
+			    String elemName = field.getElementName();
+			    String type = getType();
+			    String param = "";
+			    if (type != null && type != "") {			       
+			        param += type +" ";
+			    }
+			    param += elemName;
+				return name = String.format("%s(%s)", getIdentifier(), param);
 			}
 		}
 
