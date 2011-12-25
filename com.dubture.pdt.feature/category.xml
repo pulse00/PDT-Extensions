@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/com.dubture.pdt.feature_1.0.5.qualifier.jar" id="com.dubture.pdt.feature" version="1.0.5.qualifier">
+      <category name="PDT Extensions"/>
+   </feature>
+   <category-def name="PDT Extensions" label="PDT Extensions"/>
+</site>
