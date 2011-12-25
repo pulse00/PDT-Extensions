@@ -1,6 +1,6 @@
 # An extension to the Eclipse PHP Development Tools.
 
-[![Build Status](https://secure.travis-ci.org/pulse00/Symfony-2-Eclipse-Plugin.png)](http://travis-ci.org/pulse00/Symfony-2-Eclipse-Plugin)
+[![Build Status](https://secure.travis-ci.org/pulse00/PDT-Extensions.png)](http://travis-ci.org/pulse00/PDT-Extensions)
 
 [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=pulse00&url=https://github.com/pulse00/PDT-Extensions&title=PDT-Extensions&language=en_GB&tags=github&category=software) 
 
