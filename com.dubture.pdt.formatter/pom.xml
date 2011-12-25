@@ -8,7 +8,7 @@
     <version>1.0.6.qualifier</version>
   </parent>
 
-  <artifactId>com.dubture.pdt.core</artifactId>
+  <artifactId>com.dubture.pdt.formatter</artifactId>
   <packaging>eclipse-plugin</packaging>
 
 </project>

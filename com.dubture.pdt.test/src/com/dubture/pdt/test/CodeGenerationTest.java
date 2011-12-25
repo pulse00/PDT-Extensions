@@ -9,7 +9,7 @@ import org.junit.Test;
 import com.dubture.pdt.ui.codemanipulation.CodeGeneration;
 
 @SuppressWarnings("restriction")
-public class CodeGenerationTests extends TestCase {
+public class CodeGenerationTest extends TestCase {
 	
 	@Test
 	public void testMethodGeneration() {

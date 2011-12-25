@@ -3,10 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.dubture.pdt</groupId>
   <artifactId>parent</artifactId>
-  <version>1.0.1.qualifier</version>
+  <version>1.0.6.qualifier</version>
   <packaging>pom</packaging>
   <modules>
     <module>com.dubture.pdt.core</module>
+	<module>com.dubture.pdt.formatter</module>
     <module>com.dubture.pdt.ui</module>
     <module>com.dubture.pdt.test</module>
   </modules>
@@ -15,9 +16,14 @@
     <tycho-version>0.13.0</tycho-version>
   </properties>
 
-  <repositories>
+  <repositories>	  
    <repository>
      <id>github</id>
+     <layout>p2</layout>
+     <url>http://pulse00.github.com/p2/</url>
+   </repository>
+   <repository>
+     <id>indigo</id>
      <layout>p2</layout>
      <url>http://download.eclipse.org/releases/indigo</url>
    </repository>	
@@ -33,6 +39,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>
-
