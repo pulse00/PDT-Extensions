@@ -1,11 +1,10 @@
 # An extension to the Eclipse PHP Development Tools.
 
-To support the development you can:
+[![Build Status](https://secure.travis-ci.org/pulse00/Symfony-2-Eclipse-Plugin.png)](http://travis-ci.org/pulse00/Symfony-2-Eclipse-Plugin)
 
-* [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=pulse00&url=https://github.com/pulse00/PDT-Extensions&title=PDT-Extensions&language=en_GB&tags=github&category=software) 
-* Spread the word on your blog or on twitter
-* Share it on your social networks
-* Report bugs and feature requests in the github issues
+[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=pulse00&url=https://github.com/pulse00/PDT-Extensions&title=PDT-Extensions&language=en_GB&tags=github&category=software) 
+
+Please report bugs and feature requests in the github issues
 
 ## Current features
 
@@ -15,10 +14,9 @@ To support the development you can:
 - Override methods from superclasses (use codeassist in the method body)
 - Advanced code formatting, based on the [PDT Tools](http://en.sourceforge.jp/projects/pdt-tools/) by [atlanto](http://en.sourceforge.jp/users/atlanto/)
 
-
 ## Update Site and project page
 
-http://pulse00.github.com/PDT-Extensions/
+http://pulse00.github.com/p2
 
 ## Screenshots
 
