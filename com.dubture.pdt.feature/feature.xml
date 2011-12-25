@@ -2,7 +2,7 @@
 <feature
       id="com.dubture.pdt.feature"
       label="PDT Extensions Feature"
-      version="1.0.5.qualifier"
+      version="1.0.6.qualifier"
       provider-name="https://github.com/pulse00">
 
    <description url="https://github.com/pulse00/PDT-Extensions">
@@ -29,21 +29,21 @@ THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRES
          id="com.dubture.pdt.core"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.0.6.qualifier"
          unpack="false"/>
 
    <plugin
          id="com.dubture.pdt.ui"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.0.6.qualifier"
          unpack="false"/>
 
    <plugin
          id="com.dubture.pdt.formatter"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.0.6.qualifier"
          unpack="false"/>
 
 </feature>
