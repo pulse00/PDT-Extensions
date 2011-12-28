@@ -21,7 +21,6 @@ import org.eclipse.dltk.ast.declarations.ModuleDeclaration;
 import org.eclipse.dltk.ast.references.SimpleReference;
 import org.eclipse.dltk.ast.references.TypeReference;
 import org.eclipse.dltk.core.IMethod;
-import org.eclipse.dltk.core.IParameter;
 import org.eclipse.dltk.core.IScriptProject;
 import org.eclipse.dltk.core.IType;
 import org.eclipse.dltk.core.ModelException;
@@ -33,7 +32,6 @@ import org.eclipse.dltk.evaluation.types.MultiTypeType;
 import org.eclipse.dltk.internal.core.util.LRUCache;
 import org.eclipse.dltk.ti.types.IEvaluatedType;
 import org.eclipse.php.core.compiler.PHPFlags;
-import org.eclipse.php.internal.core.compiler.ast.nodes.FormalParameter;
 import org.eclipse.php.internal.core.compiler.ast.nodes.NamespaceReference;
 import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocBlock;
 import org.eclipse.php.internal.core.compiler.ast.nodes.PHPDocTag;
@@ -270,48 +268,64 @@ public class PDTModelUtils {
 	
 	public static String getMethodSignature(MethodDeclaration method, IScriptProject project) {
 		
-		String signature = method.getName();
+		String signature = method.getName().toLowerCase();		
+		Integer num = new Integer(method.getArguments().size());
+		return signature + num.toString();
 		
-		for (Object o: method.getArguments()) {
-
-			try {
-				FormalParameter param = (FormalParameter) o;
-
-				SimpleReference type = param.getParameterType();
-				if (type != null && isValidType(type.getName(), project)) {
-					signature += param.getParameterType().getName();										
-				}
-				
-			} catch (ClassCastException e) {
-
-			}
-		}
-		
-		return signature;
+//		for (Object o: method.getArguments()) {
+//
+//			try {
+//				FormalParameter param = (FormalParameter) o;
+//
+//				SimpleReference type = param.getParameterType();
+//				if (type != null && isValidType(type.getName(), project)) {
+//					
+//					if (signature.startsWith("setmetadatafor")) {
+//						System.err.println(": " + param.getParameterType().getName().toLowerCase());	
+//					}
+//					
+//					signature += param.getParameterType().getName().toLowerCase();										
+//				}
+//				
+//			} catch (ClassCastException e) {
+//
+//			}
+//		}
+//		
+//		return signature;
 				
 	}
 	
 	public static String getMethodSignature(IMethod method) {
 		
-		String methodSignature = method.getElementName();
-		
 		try {
-			for (IParameter param: method.getParameters()) {				
-				try {
-					
-					if (isValidType(param.getType(), method.getScriptProject())) {										
-						methodSignature += param.getType();										
-					}
-					
-				} catch (ClassCastException e) {
-
-				}
-			}
+			String methodSignature = method.getElementName().toLowerCase();
+			Integer num = new Integer(method.getParameters().length);
+			return methodSignature + num;
 		} catch (ModelException e) {
-			e.printStackTrace();
+			return "";
 		}
 		
-		return methodSignature;
+//		try {
+//			for (IParameter param: method.getParameters()) {				
+//				try {
+//					
+//					if (isValidType(param.getType(), method.getScriptProject())) {						
+//						if (methodSignature.startsWith("setmetadatafor")) {
+//							System.err.println(param.getType());
+//						}
+//						methodSignature += param.getType().toLowerCase();						
+//					}
+//					
+//				} catch (ClassCastException e) {
+//
+//				}
+//			}
+//		} catch (ModelException e) {
+//			e.printStackTrace();
+//		}
+//		
+//		return methodSignature;
 		
 		
 	}	
