@@ -4,31 +4,17 @@
 
 [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=pulse00&url=https://github.com/pulse00/PDT-Extensions&title=PDT-Extensions&language=en_GB&tags=github&category=software) 
 
-Please report bugs and feature requests in the github issues
+The plugin is still beta.
 
-## Current features
+### Requirements
 
-- Class generation wizard
-- Generate getters/setters
-- Generate unimplemented interface methods (use the quickfix in the warning of the classname)
-- Override methods from superclasses (use codeassist in the method body)
-- Advanced code formatting, based on the [PDT Tools](http://en.sourceforge.jp/projects/pdt-tools/) by [atlanto](http://en.sourceforge.jp/users/atlanto/)
+- Eclipse >= 3.7 (aka Indigo)
+- Java >= 6
+- PHP Development Tools - Development build (available in the updatesite)
 
-## Update Site and project page
+### Updatesite
 
-http://pulse00.github.com/p2
+[http://pulse00.github.com/p2/](http://pulse00.github.com/p2/)
 
-## Screenshots
-
-### Class generation wizard
-
-![PDE Class Wizard](http://pulse00.github.com/PDT-Extensions/web/images/class_wizard.png)
-
-### Getter Setter generation
-
-![PDE Getter/Setter](http://pulse00.github.com/PDT-Extensions/web/images/getter_setter_dialog.png)
-
-### Code Formatting
-
-![Code Formatting](http://pulse00.github.com/PDT-Extensions/web/images/codestyle.png)
+For more info visit [http://pde.dubture.com/](http://pde.dubture.com/)
 

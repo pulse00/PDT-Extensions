@@ -8,6 +8,9 @@
  ******************************************************************************/
 package com.dubture.pdt.core.codeassist.strategy;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.dltk.core.IMethod;
 import org.eclipse.dltk.core.IModelElement;
@@ -86,6 +89,8 @@ AbstractCompletionStrategy implements ICompletionStrategy {
 		ITypeHierarchy hierarchy = type.newSupertypeHierarchy(new NullProgressMonitor());		
 		IType[] superTypes = hierarchy.getAllSupertypes(currentType);
 
+		List<String> reported = new ArrayList<String>();
+		
 		for (IType superType : superTypes) {
 
 			for (IMethod method : superType.getMethods()) {
@@ -100,8 +105,9 @@ AbstractCompletionStrategy implements ICompletionStrategy {
 
 				} catch (ModelException e) {
 
-					if (CodeAssistUtils.startsWithIgnoreCase(moduleMethod.getElementName(), prefix)) {
-						reporter.reportMethod(method, "", range, new PDTCompletionInfo(module));	
+					if (CodeAssistUtils.startsWithIgnoreCase(moduleMethod.getElementName(), prefix) && !reported.contains(method.getElementName())) {					    
+						reporter.reportMethod(method, "", range, new PDTCompletionInfo(module));
+						reported.add(method.getElementName());
 					}										
 				}							
 			}
