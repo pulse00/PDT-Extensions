@@ -50,15 +50,12 @@
     <div id="container">
     <header>
       <h1 id="logo">
-		<div class="title">{% raw %}{{ <a href="http://eclipse.org/pdt" target="_blank"> PDT </a> | <a href="http://pulse00.github.com/PDT-Extensions/" target="_blank"> Extensions </a> }}{% endraw %}</div>		
+		<div class="title">&#123;&#123; <a href="http://eclipse.org/pdt" target="_blank"> PDT </a> | <a href="http://pulse00.github.com/PDT-Extensions/" target="_blank"> Extensions </a> &#125;&#125;</div>		
 	  </h1>
   	   <nav>
          <ul>
          {% for link in site.navigation %}
             {% assign current = nil %}
-		      {% if page.url == link.url or page.layout == link.layout %}
-		        {% assign current = 'current' %}
-		      {% endif %}
             <li class="{% if forloop.first %}first{% endif %} {{ current }} {% if forloop.last %}last{% endif %}">
               <a class="{{ current }}" href="{{ link.url }}">{{ link.text }}</a>
             </li>
