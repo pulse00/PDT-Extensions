@@ -68,6 +68,10 @@ public class PDTVisitor extends PHPASTVisitor {
 		IModuleDeclaration module = SourceParserUtil.parse(context, null);
 		List<IMethod> unimplemented = new ArrayList<IMethod>();
 		
+		if (s.isAbstract()) {
+			return false;
+		}
+		
 		for (TypeReference interf : interfaces) {
 			
 			if (interf instanceof FullyQualifiedReference) {
