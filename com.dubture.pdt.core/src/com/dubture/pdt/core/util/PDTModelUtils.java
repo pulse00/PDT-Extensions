@@ -268,9 +268,15 @@ public class PDTModelUtils {
 	
 	public static String getMethodSignature(MethodDeclaration method, IScriptProject project) {
 		
-		String signature = method.getName().toLowerCase();		
-		Integer num = new Integer(method.getArguments().size());
-		return signature + num.toString();
+		String signature = method.getName().toLowerCase();
+		return signature;
+//		Integer num = new Integer(method.getArguments().size());
+//		
+//		if (signature.equals("current")) {
+//			System.err.println("c: " + num);
+//		}
+		
+//		return signature + num.toString();
 		
 //		for (Object o: method.getArguments()) {
 //
@@ -300,9 +306,16 @@ public class PDTModelUtils {
 		
 		try {
 			String methodSignature = method.getElementName().toLowerCase();
-			Integer num = new Integer(method.getParameters().length);
-			return methodSignature + num;
-		} catch (ModelException e) {
+			return methodSignature;
+			
+//			Integer num = new Integer(method.getParameters().length);
+//			
+//			if (methodSignature.equals("current")) {
+//					System.err.println(num);
+//			}
+//
+//			return methodSignature + num;
+		} catch (Exception e) {
 			return "";
 		}
 		

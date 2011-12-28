@@ -11,28 +11,26 @@ package com.dubture.pdt.core.visitor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.dltk.ast.declarations.MethodDeclaration;
-import org.eclipse.dltk.ast.declarations.ModuleDeclaration;
-import org.eclipse.dltk.ast.parser.IModuleDeclaration;
 import org.eclipse.dltk.ast.references.TypeReference;
 import org.eclipse.dltk.core.IMethod;
 import org.eclipse.dltk.core.IScriptProject;
 import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.IType;
-import org.eclipse.dltk.core.SourceParserUtil;
+import org.eclipse.dltk.core.ModelException;
 import org.eclipse.dltk.core.index2.search.ISearchEngine.MatchRule;
 import org.eclipse.dltk.core.search.IDLTKSearchScope;
 import org.eclipse.dltk.core.search.SearchEngine;
+import org.eclipse.dltk.ti.types.IEvaluatedType;
 import org.eclipse.php.internal.core.compiler.ast.nodes.ClassDeclaration;
 import org.eclipse.php.internal.core.compiler.ast.nodes.FullyQualifiedReference;
-import org.eclipse.php.internal.core.compiler.ast.nodes.NamespaceReference;
-import org.eclipse.php.internal.core.compiler.ast.nodes.UsePart;
 import org.eclipse.php.internal.core.compiler.ast.visitor.PHPASTVisitor;
 import org.eclipse.php.internal.core.model.PhpModelAccess;
 import org.eclipse.php.internal.core.typeinference.PHPModelUtils;
+import org.eclipse.php.internal.core.typeinference.PHPTypeInferenceUtils;
 
 import com.dubture.pdt.core.compiler.MissingMethodImplementation;
 import com.dubture.pdt.core.util.PDTModelUtils;
@@ -40,10 +38,8 @@ import com.dubture.pdt.core.util.PDTModelUtils;
 @SuppressWarnings("restriction")
 public class PDTVisitor extends PHPASTVisitor {
 
-	private final ISourceModule context;
-	
-	private List<MissingMethodImplementation> missingInterfaceImplemetations = new ArrayList<MissingMethodImplementation>();
-	
+	private final ISourceModule context;	
+	private List<MissingMethodImplementation> missingInterfaceImplemetations = new ArrayList<MissingMethodImplementation>();	
 	private int nameStart;
 	private int nameEnd;
 
@@ -59,64 +55,97 @@ public class PDTVisitor extends PHPASTVisitor {
 	
 	public boolean endvisit(ClassDeclaration s) throws Exception {
 
-		Collection<TypeReference> interfaces = s.getInterfaceList();		
-		IScriptProject project = context.getScriptProject();
-		IDLTKSearchScope scope = SearchEngine.createSearchScope(project);		
-		PhpModelAccess model = PhpModelAccess.getDefault();		
 		nameStart = s.getNameStart();
-		nameEnd = s.getNameEnd();			
-		IModuleDeclaration module = SourceParserUtil.parse(context, null);
-		List<IMethod> unimplemented = new ArrayList<IMethod>();
+		nameEnd = s.getNameEnd();
+		checkMethodImplementations(s);
+		return super.endvisit(s);
 		
+	}
+	
+	protected void checkMethodImplementations(ClassDeclaration s) {
+
 		if (s.isAbstract()) {
-			return false;
+			return;
 		}
 		
+		Collection<TypeReference> interfaces = s.getInterfaceList();
+		IScriptProject project = context.getScriptProject();
+		List<IMethod> unimplemented = new ArrayList<IMethod>();		
+		IDLTKSearchScope scope = SearchEngine.createSearchScope(project);		
+		PhpModelAccess model = PhpModelAccess.getDefault();		
+		IType classType = null;
+		IType nss = PHPModelUtils.getCurrentNamespace(context, nameStart);
+				
+		// namespaced class
+		if (nss != null) {			
+			IType[] ts = model.findTypes(nss.getElementName(), s.getName(), MatchRule.EXACT, 0, 0, scope, null);
+			if (ts.length != 1) {
+				return;
+			}			
+			classType = ts[0];
+			
+		} else {
+			IType[] ts = model.findTypes(s.getName(), MatchRule.EXACT, 0, 0, scope, null);
+			if (ts.length != 1) {
+				return;
+			}			
+			classType = ts[0];			
+		}
+		
+		// iterate over all interfaces and check if the current class
+		// or any of the superclasses implements the method
 		for (TypeReference interf : interfaces) {
 			
 			if (interf instanceof FullyQualifiedReference) {
 				
 				FullyQualifiedReference fqr = (FullyQualifiedReference) interf;				
-				NamespaceReference ns = fqr.getNamespace();
-				String typeName = "";
-				if (ns != null) {
-					typeName = fqr.getFullyQualifiedName();
-					
-				} else {
-
-					IType currentNamespace = PHPModelUtils.getCurrentNamespace(context, fqr.sourceStart());
-					final Map<String, UsePart> result = PHPModelUtils.getAliasToNSMap(fqr.getName()	, (ModuleDeclaration) module, fqr.sourceStart(), currentNamespace, true);
-
-					if (result.containsKey(fqr.getName())) {
-						
-						typeName = result.get(fqr.getName()).getNamespace().getFullyQualifiedName();
-					}					
+				IEvaluatedType eval = PHPTypeInferenceUtils.resolveExpression(context, fqr);				
+				String separator = "\\";				
+				String name = eval.getTypeName();
+				if (eval.getTypeName().startsWith(separator)) {
+					name = eval.getTypeName().replaceFirst("\\\\", "");
 				}
-
-				IType[] types = model.findTypes(typeName, MatchRule.EXACT, 0, 0, scope, new NullProgressMonitor());
+				
+				IType[] types = model.findTypes(name, MatchRule.EXACT, 0, 0, scope, new NullProgressMonitor());
 				
 				if (types.length != 1) {
 					continue;
-				} 
+				}
 				
 				IType type = types[0];
 				
-				for (IMethod method : type.getMethods()) {
+				try {
+					for (IMethod method : type.getMethods()) {
 
-					String methodSignature = PDTModelUtils.getMethodSignature(method);
-					boolean implemented = false;
-					for (MethodDeclaration typeMethod : s.getMethods()) {					
+						boolean implemented = false;
+						String methodSignature = PDTModelUtils.getMethodSignature(method);					
+						IMethod[] ms = PHPModelUtils.getSuperTypeHierarchyMethod(classType, method.getElementName(), true, null);
 						
-						String signature = PDTModelUtils.getMethodSignature(typeMethod, project);						
-						if (methodSignature.equals(signature)) {
+						
+						for (IMethod me : ms) {						
+							if (me.getParent().getElementName().equals(fqr.getName())) {
+								continue;
+							}
 							implemented = true;
-							break;
+						}
+						
+						for (MethodDeclaration typeMethod : s.getMethods()) {					
+						
+							String signature = PDTModelUtils.getMethodSignature(typeMethod, project);						
+							if (methodSignature.equals(signature)) {
+								implemented = true;
+								break;
+							}
+						}
+											
+						if (implemented == false) {
+							unimplemented.add(method);
 						}
 					}
-					
-					if (!implemented) {
-						unimplemented.add(method);
-					}
+				} catch (ModelException e) {
+					e.printStackTrace();
+				} catch (CoreException e) {
+					e.printStackTrace();
 				}					
 			}				
 		}
@@ -125,8 +154,6 @@ public class PDTVisitor extends PHPASTVisitor {
 			MissingMethodImplementation missing = new MissingMethodImplementation(s, unimplemented);
 			missingInterfaceImplemetations.add(missing);
 		}
-		
-		return super.endvisit(s);
 	}
 
 	public int getNameEnd() {
@@ -136,5 +163,4 @@ public class PDTVisitor extends PHPASTVisitor {
 	public int getNameStart() {
 		return nameStart;
 	}
-
 }
