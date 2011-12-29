@@ -99,13 +99,23 @@ public class PDTVisitor extends PHPASTVisitor {
 			if (interf instanceof FullyQualifiedReference) {
 				
 				FullyQualifiedReference fqr = (FullyQualifiedReference) interf;				
-				IEvaluatedType eval = PHPTypeInferenceUtils.resolveExpression(context, fqr);				
-				String separator = "\\";				
-				String name = eval.getTypeName();
-				if (eval.getTypeName().startsWith(separator)) {
-					name = eval.getTypeName().replaceFirst("\\\\", "");
+				String name = null;
+				
+				// we have a namespace
+				if (fqr.getNamespace() != null) {
+					name = fqr.getNamespace().getName() + "\\" + fqr.getName();					
+				} else {
+					IEvaluatedType eval = PHPTypeInferenceUtils.resolveExpression(context, fqr);				
+					String separator = "\\";				
+					name = eval.getTypeName();
+					if (eval.getTypeName().startsWith(separator)) {
+						name = eval.getTypeName().replaceFirst("\\\\", "");
+					}					
 				}
 				
+				if (name == null) {
+					continue;
+				}
 				IType[] types = model.findTypes(name, MatchRule.EXACT, 0, 0, scope, new NullProgressMonitor());
 				
 				if (types.length != 1) {

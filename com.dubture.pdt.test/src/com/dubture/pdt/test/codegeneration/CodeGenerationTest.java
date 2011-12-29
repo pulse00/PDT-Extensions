@@ -1,4 +1,4 @@
-package com.dubture.pdt.test;
+package com.dubture.pdt.test.codegeneration;
 
 import junit.framework.TestCase;
 

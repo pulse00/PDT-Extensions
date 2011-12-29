@@ -1,10 +1,16 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: PDE Tests
-Bundle-SymbolicName: com.dubture.pdt.test
+Bundle-Name: PDT Tests
+Bundle-SymbolicName: com.dubture.pdt.test;singleton:=true
 Bundle-Version: 1.0.7.qualifier
-Bundle-Vendor: https://github.com/pulse00
-Fragment-Host: com.dubture.pdt.ui;bundle-version="1.0.1"
+Bundle-Activator: com.dubture.pdt.test.PDTTestPlugin
+Bundle-Vendor: DUBTURE
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.junit4,
+ org.eclipse.php.core,
+ org.eclipse.dltk.core,
+ com.dubture.pdt.core,
+ com.dubture.pdt.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: org.eclipse.jdt.junit,
- org.junit
+Bundle-ActivationPolicy: lazy
