@@ -1,3 +1,8 @@
+1.0.8
+
+- updated for latest PDT API
+
+
 1.0.6
 
 - fixed getter/setter dialog (see #20)

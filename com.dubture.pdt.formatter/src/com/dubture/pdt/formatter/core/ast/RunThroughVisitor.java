@@ -11,6 +11,7 @@ import org.eclipse.php.internal.core.ast.nodes.Block;
 import org.eclipse.php.internal.core.ast.nodes.BreakStatement;
 import org.eclipse.php.internal.core.ast.nodes.CastExpression;
 import org.eclipse.php.internal.core.ast.nodes.CatchClause;
+import org.eclipse.php.internal.core.ast.nodes.ChainingInstanceCall;
 import org.eclipse.php.internal.core.ast.nodes.ClassDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.ClassInstanceCreation;
 import org.eclipse.php.internal.core.ast.nodes.ClassName;
@@ -20,6 +21,7 @@ import org.eclipse.php.internal.core.ast.nodes.ConditionalExpression;
 import org.eclipse.php.internal.core.ast.nodes.ConstantDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.ContinueStatement;
 import org.eclipse.php.internal.core.ast.nodes.DeclareStatement;
+import org.eclipse.php.internal.core.ast.nodes.DereferenceNode;
 import org.eclipse.php.internal.core.ast.nodes.DoStatement;
 import org.eclipse.php.internal.core.ast.nodes.EchoStatement;
 import org.eclipse.php.internal.core.ast.nodes.EmptyStatement;
@@ -29,6 +31,7 @@ import org.eclipse.php.internal.core.ast.nodes.FieldsDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.ForEachStatement;
 import org.eclipse.php.internal.core.ast.nodes.ForStatement;
 import org.eclipse.php.internal.core.ast.nodes.FormalParameter;
+import org.eclipse.php.internal.core.ast.nodes.FullyQualifiedTraitMethodReference;
 import org.eclipse.php.internal.core.ast.nodes.FunctionDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.FunctionInvocation;
 import org.eclipse.php.internal.core.ast.nodes.FunctionName;
@@ -49,6 +52,7 @@ import org.eclipse.php.internal.core.ast.nodes.MethodDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.MethodInvocation;
 import org.eclipse.php.internal.core.ast.nodes.NamespaceDeclaration;
 import org.eclipse.php.internal.core.ast.nodes.NamespaceName;
+import org.eclipse.php.internal.core.ast.nodes.PHPArrayDereferenceList;
 import org.eclipse.php.internal.core.ast.nodes.ParenthesisExpression;
 import org.eclipse.php.internal.core.ast.nodes.PostfixExpression;
 import org.eclipse.php.internal.core.ast.nodes.PrefixExpression;
@@ -66,6 +70,12 @@ import org.eclipse.php.internal.core.ast.nodes.StaticStatement;
 import org.eclipse.php.internal.core.ast.nodes.SwitchCase;
 import org.eclipse.php.internal.core.ast.nodes.SwitchStatement;
 import org.eclipse.php.internal.core.ast.nodes.ThrowStatement;
+import org.eclipse.php.internal.core.ast.nodes.TraitAlias;
+import org.eclipse.php.internal.core.ast.nodes.TraitAliasStatement;
+import org.eclipse.php.internal.core.ast.nodes.TraitDeclaration;
+import org.eclipse.php.internal.core.ast.nodes.TraitPrecedence;
+import org.eclipse.php.internal.core.ast.nodes.TraitPrecedenceStatement;
+import org.eclipse.php.internal.core.ast.nodes.TraitUseStatement;
 import org.eclipse.php.internal.core.ast.nodes.TryStatement;
 import org.eclipse.php.internal.core.ast.nodes.UnaryOperation;
 import org.eclipse.php.internal.core.ast.nodes.UseStatement;
@@ -657,4 +667,204 @@ public class RunThroughVisitor implements Visitor {
 
 	public void preVisit(ASTNode node) {
 	}
+
+    /* (non-Javadoc)
+     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#visit(org.eclipse.php.internal.core.ast.nodes.ChainingInstanceCall)
+     */
+    @Override
+    public boolean visit(ChainingInstanceCall node)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#endVisit(org.eclipse.php.internal.core.ast.nodes.ChainingInstanceCall)
+     */
+    @Override
+    public void endVisit(ChainingInstanceCall node)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#visit(org.eclipse.php.internal.core.ast.nodes.DereferenceNode)
+     */
+    @Override
+    public boolean visit(DereferenceNode node)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#endVisit(org.eclipse.php.internal.core.ast.nodes.DereferenceNode)
+     */
+    @Override
+    public void endVisit(DereferenceNode node)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#visit(org.eclipse.php.internal.core.ast.nodes.FullyQualifiedTraitMethodReference)
+     */
+    @Override
+    public boolean visit(FullyQualifiedTraitMethodReference node)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#endVisit(org.eclipse.php.internal.core.ast.nodes.FullyQualifiedTraitMethodReference)
+     */
+    @Override
+    public void endVisit(FullyQualifiedTraitMethodReference node)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#visit(org.eclipse.php.internal.core.ast.nodes.PHPArrayDereferenceList)
+     */
+    @Override
+    public boolean visit(PHPArrayDereferenceList node)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#endVisit(org.eclipse.php.internal.core.ast.nodes.PHPArrayDereferenceList)
+     */
+    @Override
+    public void endVisit(PHPArrayDereferenceList node)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#visit(org.eclipse.php.internal.core.ast.nodes.TraitAlias)
+     */
+    @Override
+    public boolean visit(TraitAlias node)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#endVisit(org.eclipse.php.internal.core.ast.nodes.TraitAlias)
+     */
+    @Override
+    public void endVisit(TraitAlias node)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#visit(org.eclipse.php.internal.core.ast.nodes.TraitAliasStatement)
+     */
+    @Override
+    public boolean visit(TraitAliasStatement node)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#endVisit(org.eclipse.php.internal.core.ast.nodes.TraitAliasStatement)
+     */
+    @Override
+    public void endVisit(TraitAliasStatement node)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#visit(org.eclipse.php.internal.core.ast.nodes.TraitDeclaration)
+     */
+    @Override
+    public boolean visit(TraitDeclaration node)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#endVisit(org.eclipse.php.internal.core.ast.nodes.TraitDeclaration)
+     */
+    @Override
+    public void endVisit(TraitDeclaration node)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#visit(org.eclipse.php.internal.core.ast.nodes.TraitPrecedence)
+     */
+    @Override
+    public boolean visit(TraitPrecedence node)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#endVisit(org.eclipse.php.internal.core.ast.nodes.TraitPrecedence)
+     */
+    @Override
+    public void endVisit(TraitPrecedence node)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#visit(org.eclipse.php.internal.core.ast.nodes.TraitPrecedenceStatement)
+     */
+    @Override
+    public boolean visit(TraitPrecedenceStatement node)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#endVisit(org.eclipse.php.internal.core.ast.nodes.TraitPrecedenceStatement)
+     */
+    @Override
+    public void endVisit(TraitPrecedenceStatement node)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#visit(org.eclipse.php.internal.core.ast.nodes.TraitUseStatement)
+     */
+    @Override
+    public boolean visit(TraitUseStatement node)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#endVisit(org.eclipse.php.internal.core.ast.nodes.TraitUseStatement)
+     */
+    @Override
+    public void endVisit(TraitUseStatement node)
+    {
+        // TODO Auto-generated method stub
+        
+    }
 }
