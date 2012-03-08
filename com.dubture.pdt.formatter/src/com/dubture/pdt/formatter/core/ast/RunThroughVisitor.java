@@ -84,6 +84,7 @@ import org.eclipse.php.internal.core.ast.nodes.Variable;
 import org.eclipse.php.internal.core.ast.nodes.WhileStatement;
 import org.eclipse.php.internal.core.ast.visitor.Visitor;
 
+@SuppressWarnings("restriction")
 public class RunThroughVisitor implements Visitor {
 
 	public boolean visit(ArrayAccess arrayAccess) {
