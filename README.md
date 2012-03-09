@@ -8,9 +8,8 @@ The plugin is still beta.
 
 ### Requirements
 
-- Eclipse >= 3.7 (aka Indigo)
+- Eclipse >= 3.7.2 (aka Indigo SR2)
 - Java >= 6
-- PHP Development Tools - Development build (available in the updatesite)
 
 ### Updatesite
 
