@@ -669,200 +669,120 @@ public class RunThroughVisitor implements Visitor {
 	public void preVisit(ASTNode node) {
 	}
 
-    /* (non-Javadoc)
-     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#visit(org.eclipse.php.internal.core.ast.nodes.ChainingInstanceCall)
-     */
-    @Override
     public boolean visit(ChainingInstanceCall node)
     {
         // TODO Auto-generated method stub
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#endVisit(org.eclipse.php.internal.core.ast.nodes.ChainingInstanceCall)
-     */
-    @Override
     public void endVisit(ChainingInstanceCall node)
     {
         // TODO Auto-generated method stub
         
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#visit(org.eclipse.php.internal.core.ast.nodes.DereferenceNode)
-     */
-    @Override
     public boolean visit(DereferenceNode node)
     {
         // TODO Auto-generated method stub
         return false;
     }
-
-    /* (non-Javadoc)
-     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#endVisit(org.eclipse.php.internal.core.ast.nodes.DereferenceNode)
-     */
-    @Override
+    
     public void endVisit(DereferenceNode node)
     {
         // TODO Auto-generated method stub
         
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#visit(org.eclipse.php.internal.core.ast.nodes.FullyQualifiedTraitMethodReference)
-     */
-    @Override
     public boolean visit(FullyQualifiedTraitMethodReference node)
     {
         // TODO Auto-generated method stub
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#endVisit(org.eclipse.php.internal.core.ast.nodes.FullyQualifiedTraitMethodReference)
-     */
-    @Override
     public void endVisit(FullyQualifiedTraitMethodReference node)
     {
         // TODO Auto-generated method stub
         
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#visit(org.eclipse.php.internal.core.ast.nodes.PHPArrayDereferenceList)
-     */
-    @Override
     public boolean visit(PHPArrayDereferenceList node)
     {
         // TODO Auto-generated method stub
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#endVisit(org.eclipse.php.internal.core.ast.nodes.PHPArrayDereferenceList)
-     */
-    @Override
     public void endVisit(PHPArrayDereferenceList node)
     {
         // TODO Auto-generated method stub
         
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#visit(org.eclipse.php.internal.core.ast.nodes.TraitAlias)
-     */
-    @Override
     public boolean visit(TraitAlias node)
     {
         // TODO Auto-generated method stub
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#endVisit(org.eclipse.php.internal.core.ast.nodes.TraitAlias)
-     */
-    @Override
     public void endVisit(TraitAlias node)
     {
         // TODO Auto-generated method stub
         
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#visit(org.eclipse.php.internal.core.ast.nodes.TraitAliasStatement)
-     */
-    @Override
     public boolean visit(TraitAliasStatement node)
     {
         // TODO Auto-generated method stub
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#endVisit(org.eclipse.php.internal.core.ast.nodes.TraitAliasStatement)
-     */
-    @Override
     public void endVisit(TraitAliasStatement node)
     {
         // TODO Auto-generated method stub
         
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#visit(org.eclipse.php.internal.core.ast.nodes.TraitDeclaration)
-     */
-    @Override
     public boolean visit(TraitDeclaration node)
     {
         // TODO Auto-generated method stub
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#endVisit(org.eclipse.php.internal.core.ast.nodes.TraitDeclaration)
-     */
-    @Override
     public void endVisit(TraitDeclaration node)
     {
         // TODO Auto-generated method stub
         
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#visit(org.eclipse.php.internal.core.ast.nodes.TraitPrecedence)
-     */
-    @Override
     public boolean visit(TraitPrecedence node)
     {
         // TODO Auto-generated method stub
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#endVisit(org.eclipse.php.internal.core.ast.nodes.TraitPrecedence)
-     */
-    @Override
     public void endVisit(TraitPrecedence node)
     {
         // TODO Auto-generated method stub
         
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#visit(org.eclipse.php.internal.core.ast.nodes.TraitPrecedenceStatement)
-     */
-    @Override
     public boolean visit(TraitPrecedenceStatement node)
     {
         // TODO Auto-generated method stub
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#endVisit(org.eclipse.php.internal.core.ast.nodes.TraitPrecedenceStatement)
-     */
-    @Override
     public void endVisit(TraitPrecedenceStatement node)
     {
         // TODO Auto-generated method stub
         
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#visit(org.eclipse.php.internal.core.ast.nodes.TraitUseStatement)
-     */
-    @Override
     public boolean visit(TraitUseStatement node)
     {
         // TODO Auto-generated method stub
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see org.eclipse.php.internal.core.ast.visitor.Visitor#endVisit(org.eclipse.php.internal.core.ast.nodes.TraitUseStatement)
-     */
-    @Override
     public void endVisit(TraitUseStatement node)
     {
         // TODO Auto-generated method stub
