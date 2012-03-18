@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: PDT Tests
 Bundle-SymbolicName: com.dubture.pdt.test;singleton:=true
-Bundle-Version: 1.0.9.qualifier
+Bundle-Version: 1.0.10
 Bundle-Activator: com.dubture.pdt.test.PDTTestPlugin
 Bundle-Vendor: DUBTURE
 Require-Bundle: org.eclipse.core.runtime,

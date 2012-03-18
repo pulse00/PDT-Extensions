@@ -1,3 +1,8 @@
+1.0.10
+
+- Tycho 0.14
+- Integration into automatic p2 build process
+
 1.0.8
 
 - updated for latest PDT API
