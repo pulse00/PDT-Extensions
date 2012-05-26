@@ -50,7 +50,9 @@ public class GetterSetterDialog extends CheckedTreeSelectionDialog {
 	private final IType type;	
 	private int visibility;
 	private boolean comments;
+	private boolean fluent;
 	private Button generateComments;
+	private Button fluentInterface;
 	private Combo insertionPoint;
 	private int insertAfter;
 	
@@ -182,8 +184,28 @@ public class GetterSetterDialog extends CheckedTreeSelectionDialog {
         	}
          });
          
+         
+         fluentInterface = new Button(parent, SWT.CHECK);
+         fluentInterface.setText("Fluent interface");
+         
+         fluentInterface.addSelectionListener(new SelectionAdapter() {
+             @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                 fluent = fluentInterface.getSelection();
+            }
+         });
+         
+         fluentInterface.setSelection(true);
+         
+         
 		return control;		
 		
+	}
+	
+	public boolean hasFluentInterface()
+	{
+	    return fluent;
 	}
 	
 	

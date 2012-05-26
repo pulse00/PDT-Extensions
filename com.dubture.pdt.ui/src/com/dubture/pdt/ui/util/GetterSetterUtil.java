@@ -208,10 +208,11 @@ public class GetterSetterUtil {
 	 * @param setterName The chosen name for the setter
 	 * @param addComments If <code>true</code>, comments will be added.
 	 * @param flags The flags signaling visibility, if static, synchronized or final
+	 * @param fluent 
 	 * @return Returns the generated stub.
 	 * @throws CoreException
 	 */
-	public static String getSetterStub(IField field, String setterName, String typeName, boolean addComments, int flags, String indent) throws CoreException {
+	public static String getSetterStub(IField field, String setterName, String typeName, boolean addComments, int flags, String indent, boolean fluent) throws CoreException {
 		
 		String fieldName= field.getElementName();
 		IType parentType= field.getDeclaringType();
@@ -253,6 +254,12 @@ public class GetterSetterUtil {
 		if (body != null) {
 			buf.append(indent + body);
 		}
+		
+		if (fluent) {
+		    buf.append(lineDelim);
+		    buf.append(indent + "return $this;");
+		}
+		
 		buf.append(lineDelim);
 		buf.append("}"); //$NON-NLS-1$
 		return buf.toString();

@@ -252,7 +252,7 @@ public class GenerateGettersHandler extends SelectionHandler implements IHandler
 				else if (dialog.insertAsLastMember()) {
 				} else insertAfter = dialog.getInsertionPoint();
 				
-				generate(entries, dialog.getModifier(), dialog.doGenerateComments());
+				generate(entries, dialog.getModifier(), dialog.doGenerateComments(), dialog.hasFluentInterface());
 				
 			}
 			
@@ -265,7 +265,7 @@ public class GenerateGettersHandler extends SelectionHandler implements IHandler
 	}
 	
 	
-	private void generate(final List<GetterSetterEntry> entries, final int modifier, final boolean generateComments) throws Exception {
+	private void generate(final List<GetterSetterEntry> entries, final int modifier, final boolean generateComments, final boolean fluent) throws Exception {
 
 		ISourceModule source = type.getSourceModule();			
 		String name = type.getElementName().replace("$", "");			
@@ -329,7 +329,7 @@ public class GenerateGettersHandler extends SelectionHandler implements IHandler
 			
 			if (!entry.isGetter) {
 				code = GetterSetterUtil.getSetterStub(entry.field, 
-						entry.getIdentifier(), entry.getType(), generateComments, modifier, indent);
+						entry.getIdentifier(), entry.getType(), generateComments, modifier, indent, fluent);
 				
 			} else {
 				code = GetterSetterUtil.getGetterStub(entry.field, 
