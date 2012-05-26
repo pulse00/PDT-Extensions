@@ -180,6 +180,13 @@ public class GenerateGettersHandler extends SelectionHandler implements IHandler
 		}
 	}
 	
+	protected Object exitMessage()
+	{
+	    final Shell p = DLTKUIPlugin.getActiveWorkbenchShell();
+	    MessageDialog.openInformation(p, "Getter/Setter generation unavailable", "No fields to generate getters/setters found.");
+	    return null;
+	}
+	
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
@@ -187,7 +194,7 @@ public class GenerateGettersHandler extends SelectionHandler implements IHandler
 		IModelElement element = getCurrentModelElement(event);
 		
 		if (element == null) {			
-			return null;
+		    return exitMessage();
 		}
 		
 		if (!(element instanceof SourceType)) {			
@@ -200,15 +207,16 @@ public class GenerateGettersHandler extends SelectionHandler implements IHandler
 		}
 		
 		if (element == null || !(element instanceof SourceType)) {
-			return null;
+			return exitMessage();
 		}
 		
 		type = (SourceType) element;
 		
 		try {
 
-			if (type.getFields().length == 0)
-				return null;
+			if (type.getFields().length == 0) {
+			    return exitMessage();
+			}
 
 			initialize(event, element);
 			
@@ -222,8 +230,7 @@ public class GenerateGettersHandler extends SelectionHandler implements IHandler
 			dialog.setTitle("Generate Getters and Setters");
 			
 			if (fields.size() == 0) {
-			    MessageDialog.openInformation(p, "Getter/Setter generation unavailable", "No fields to generate getters/setters found.");
-			    return null;
+			    return exitMessage();
 			}
 			
 			if (dialog.open() == Window.OK) {
