@@ -9,6 +9,7 @@
 package com.dubture.pdt.core.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -57,7 +58,7 @@ public class PDTModelUtils {
 			.compile("array\\[.*\\]");	
 
 	private static LRUCache typeCache = new LRUCache();
-	
+	private static List<String> builtinTypes = new ArrayList<String>(Arrays.asList("array"));
 	
 	public static List<IEvaluatedType> collectUseStatements(List<IType> types, boolean includeAbstract) {
 		
@@ -345,6 +346,10 @@ public class PDTModelUtils {
 
 	public static boolean isValidType(String type, IScriptProject project) {
 		
+	    if (builtinTypes.contains(type)) {
+	        return true;
+	    }
+	    
 		String key = type + project.getElementName();
 		
 		if (typeCache.get(key) != null)
