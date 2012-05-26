@@ -76,9 +76,6 @@ public class GetterSetterDialog extends CheckedTreeSelectionDialog {
 				try {
 					for (IMethod method : type.getMethods()) {
 				
-					    if (PHPFlags.isStatic(method.getFlags())) {
-					        return false;
-					    }
 						if (entry.isGetter) {							
 							if (method.getElementName().compareToIgnoreCase("get" + entry.getRawFieldName()) == 0) {
 								return false;

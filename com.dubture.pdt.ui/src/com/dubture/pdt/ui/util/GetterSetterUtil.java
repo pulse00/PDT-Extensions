@@ -27,6 +27,7 @@ import org.eclipse.php.internal.core.compiler.ast.nodes.PHPModuleDeclaration;
 import org.eclipse.php.internal.core.compiler.ast.visitor.PHPASTVisitor;
 import org.eclipse.php.ui.CodeGeneration;
 
+import com.dubture.pdt.core.util.Inflector;
 import com.dubture.pdt.core.util.PDTModelUtils;
 
 /**
@@ -129,8 +130,15 @@ public class GetterSetterUtil {
 		
 		String name = field.getElementName().replace("$", "");			
 		StringBuffer buffer = new StringBuffer(name);			
-		buffer.replace(0, 1, Character.toString(Character.toUpperCase(name.charAt(0))));			
-		return buffer.toString();		
+		buffer.replace(0, 1, Character.toString(Character.toUpperCase(name.charAt(0))));
+		
+		String prepared = buffer.toString();
+		
+		if (prepared.contains("_")) {
+		    prepared = Inflector.camelCase(prepared);
+		}
+		
+		return prepared;
 		
 	}
 

@@ -33,6 +33,7 @@ import org.eclipse.dltk.core.ModelException;
 import org.eclipse.dltk.internal.core.SourceType;
 import org.eclipse.dltk.ui.DLTKPluginImages;
 import org.eclipse.dltk.ui.DLTKUIPlugin;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.Region;
 import org.eclipse.jface.text.TextUtilities;
@@ -70,13 +71,13 @@ import com.dubture.pdt.ui.util.GetterSetterUtil;
  *
  */
 @SuppressWarnings("restriction")
-public class GenerateGettersHandler extends SelectionHandler implements
-		IHandler {
+public class GenerateGettersHandler extends SelectionHandler implements IHandler {
 	
 	private IEditorPart editorPart;
 	private PHPStructuredEditor textEditor;
 	private IDocument document;
-	private Map options;
+	
+    private Map options;
 	private SourceType type;
 	private String lineDelim;
 	private boolean insertFirst = false;
@@ -109,6 +110,7 @@ public class GenerateGettersHandler extends SelectionHandler implements
 		public Object[] getElements(Object inputElement) {
 
 			return fields.keySet().toArray();
+			
 
 		}
 
@@ -116,8 +118,15 @@ public class GenerateGettersHandler extends SelectionHandler implements
 		public Object[] getChildren(Object parentElement) {
 			
 			if (parentElement instanceof IField) {
-				return (Object[]) fields.get(parentElement);
+			    
+			    Object[] elems = (Object[]) fields.get(parentElement);
+
+			    for (Object elem : elems) {
+			        GetterSetterEntry entry = (GetterSetterEntry) elem;
+			    }
+				return elems;
 			}
+			
 			return EMPTY;
 		}
 
@@ -166,6 +175,7 @@ public class GenerateGettersHandler extends SelectionHandler implements
 				return GetterSetterUtil.getFieldName(((IField)element));
 				
 			}
+			
 			return super.getText(element);
 		}
 	}
@@ -210,6 +220,11 @@ public class GenerateGettersHandler extends SelectionHandler implements
 			dialog.setContainerMode(true);
 			dialog.setInput(type);
 			dialog.setTitle("Generate Getters and Setters");
+			
+			if (fields.size() == 0) {
+			    MessageDialog.openInformation(p, "Getter/Setter generation unavailable", "No fields to generate getters/setters found.");
+			    return null;
+			}
 			
 			if (dialog.open() == Window.OK) {
 				
@@ -444,7 +459,7 @@ public class GenerateGettersHandler extends SelectionHandler implements
                 entries.add(new GetterSetterEntry(field, false));
             }
             
-            if (entries.size() > 0) {
+            if (!getterExists || !setterExists) {
                 l.addAll(entries);    
             }
             
