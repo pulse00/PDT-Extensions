@@ -251,7 +251,11 @@ public class CodeGeneration {
 			buffer.append(param.getName());
 			
 			if (param.getDefaultValue() != null) {
-				buffer.append(" = " + param.getDefaultValue());
+			    if ("array".equals(param.getType()) && param.getDefaultValue().trim().length() == 0) {
+			        buffer.append(" = array()");
+			    } else {
+			        buffer.append(" = " + param.getDefaultValue());
+			    }
 			}
 			if (i++ < size-1) {
 				buffer.append(", ");
