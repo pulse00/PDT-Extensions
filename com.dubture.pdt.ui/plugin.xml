@@ -21,8 +21,7 @@
         </wizard>
    </extension>
    
-   <extension
-         point="org.eclipse.ui.menus">
+   <extension point="org.eclipse.ui.menus">
       <menuContribution
             allPopups="false"
             locationURI="menu:sourceMenuId?before=sourceBegin">
@@ -40,8 +39,7 @@
       </menuContribution>
    </extension>
    
-   <extension
-         point="org.eclipse.ui.commands">
+   <extension point="org.eclipse.ui.commands">
       <command
             categoryId="org.eclipse.ui.category.edit"
             description="Generate Getters and Setters"
@@ -50,8 +48,7 @@
       </command>
    </extension>
    
-   <extension
-         point="org.eclipse.ui.handlers">
+   <extension point="org.eclipse.ui.handlers">
       <handler
             class="com.dubture.pdt.ui.actions.GenerateGettersHandler"
             commandId="com.dubture.pdt.ui.generategetters">
@@ -85,6 +82,15 @@
                type="org.eclipse.php.PHP_DEFAULT">
          </partition>
       </scriptCompletionProposalComputer>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="com.dubture.pdt.ui.generategetters"
+            contextId="org.eclipse.ui.contexts.window"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            sequence="Ctrl+G">
+      </key>
    </extension>
    
 
