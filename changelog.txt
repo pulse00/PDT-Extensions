@@ -1,3 +1,9 @@
+1.0.11
+
+- added "fluent interface" option for getter/setter generation
+- added camelcase support for underscore fields in getter/setter generation
+- fixed some issues when overriding/implementing methods (#28, #25)
+
 1.0.10
 
 - Tycho 0.14
