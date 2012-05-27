@@ -22,4 +22,5 @@ Require-Bundle: org.eclipse.core.runtime,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: com.dubture.pdt.ui.codemanipulation,
- com.dubture.pdt.ui.extension
+ com.dubture.pdt.ui.extension,
+ com.dubture.pdt.ui.wizards.classes

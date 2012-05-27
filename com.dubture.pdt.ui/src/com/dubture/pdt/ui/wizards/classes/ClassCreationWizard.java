@@ -8,15 +8,49 @@
  ******************************************************************************/
 package com.dubture.pdt.ui.wizards.classes;
 
+import org.eclipse.dltk.core.IScriptFolder;
 import org.eclipse.dltk.ui.wizards.NewSourceModulePage;
 import org.eclipse.dltk.ui.wizards.NewSourceModuleWizard;
 
 public class ClassCreationWizard extends NewSourceModuleWizard {
+	
+	private String className = null;
+	private String namespace = null;
+	private IScriptFolder scriptFolder;
 
 	@Override
-	protected NewSourceModulePage createNewSourceModulePage() {
-
+	protected NewSourceModulePage createNewSourceModulePage()
+	{
+		if (className != null) {
+			return new ClassCreationWizardPage(getSelection(), className + ".php", namespace, className, scriptFolder); 
+		}
+		
 		return new ClassCreationWizardPage(getSelection(), "");
+	}
 
+	public String getNamespace()
+	{
+		return namespace;
+	}
+
+	public void setNamespace(String namespace)
+	{
+		this.namespace = namespace;
+	}
+
+	public String getClassName()
+	{
+		return className;
+	}
+
+	public void setClassName(String className)
+	{
+		this.className = className;
+	}
+
+	public void setScriptFolder(IScriptFolder folder) {
+		
+		this.scriptFolder = folder;
+		
 	}	
 }

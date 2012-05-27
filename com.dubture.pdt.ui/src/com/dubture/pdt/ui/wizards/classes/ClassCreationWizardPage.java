@@ -27,7 +27,6 @@ import org.eclipse.dltk.internal.ui.dialogs.OpenTypeSelectionDialog2;
 import org.eclipse.dltk.ui.DLTKUIPlugin;
 import org.eclipse.dltk.ui.dialogs.StatusInfo;
 import org.eclipse.dltk.ui.wizards.NewSourceModulePage;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.text.IDocument;
@@ -71,12 +70,9 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 
 	protected Text fileText;
 	protected Text superClassText;
-	
 	protected ISelection selection;
-
 	protected Label targetResourceLabel;
 	protected Label superClassLabel;
-	
 	private String filename = "";	
 	private String className = "";
 	private String sClass = "";
@@ -95,12 +91,27 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 	
 	protected boolean isPEAR;	
 	
+	protected String initialClassName = null;
+	protected String initialNamespace = null;
+	protected String initialFilename = null;
+	protected IScriptFolder initialFolder = null;
+	
 	public ClassCreationWizardPage(final ISelection selection, String initialFileName) {
-
 		super();
 		setImageDescriptor(PDTPluginImages.DESC_WIZBAN_NEW_PHPCLASS);
 		this.selection = selection;
+		this.initialFilename = initialFileName;
 	}
+	
+	public ClassCreationWizardPage(final ISelection selection, String initialFileName, String namespace, String className, IScriptFolder scriptFolder) {
+		this(selection, initialFileName);
+		
+		this.initialNamespace = namespace;
+		this.initialClassName = className;
+		this.initialFolder = scriptFolder;
+		
+	}
+	
 
 	
 	private OpenTypeSelectionDialog2 getDialog(int type, String title, String message) {
@@ -309,6 +320,10 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 	
 		createContainerControls(composite, nColumns);
 		createClassControls(composite, nColumns);
+		
+		if (initialFolder != null) {
+			setScriptFolder(initialFolder, true);
+		}
 	
 	}
 
@@ -322,6 +337,12 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		
 		filenameText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		filenameText.setLayoutData(gd);
+		
+		if (initialFilename != null) {
+			filenameText.setText(initialFilename);
+			filename = initialFilename;
+		}
+		
 		filenameText.addModifyListener(new ModifyListener() {
 			
 			@Override
@@ -341,6 +362,11 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		
 		namespaceText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		namespaceText.setLayoutData(gd);
+		
+		if (initialNamespace != null) {
+			namespaceText.setText(initialNamespace);
+		}
+		
 		namespaceText.addKeyListener(new KeyListener() {
 			
 			@Override
@@ -353,6 +379,7 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 				
 			}
 		});
+		
 		
 		List<INamespaceResolver> resolvers = ExtensionManager.getDefault().getNamespaceResolvers();
 		
@@ -440,6 +467,12 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 				
 		fileText.setLayoutData(gd);
+		
+		if (initialClassName != null) {
+			fileText.setText(initialClassName);
+			className = initialClassName;
+		}
+		
 		fileText.addModifyListener(new ModifyListener() {
 			public void modifyText(final ModifyEvent e) {
 				dialogChanged();
@@ -448,6 +481,7 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 				filenameText.setText(filename );
 			}
 		});
+		
 		
 		Label empty = new Label(container, SWT.None);
 		empty.setText("");
@@ -580,8 +614,8 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		});
 		
 		dialogChanged();
-		setControl(container);
-		Dialog.applyDialogFont(container);
+//		setControl(container);
+//		Dialog.applyDialogFont(container);
 				
 	}
 	
@@ -645,12 +679,26 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 		setErrorMessage(message);
 		setPageComplete(message == null);
 	}
-
-
-	public String getFileName() {
-		
-		return filename;
 	
+	@Override
+	protected String getFileText() {
+
+		if (initialFilename != null) {
+			
+			if (filenameText != null) {
+				return filenameText.getText();
+			}
+			
+			return initialFilename;
+		}
+		
+		return super.getFileText();
+	}
+
+
+	public String getFileName()
+	{
+		return filename;
 	}
 
 	public String getSuperclass() {
