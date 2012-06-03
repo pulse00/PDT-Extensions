@@ -448,7 +448,7 @@ div.title {
 	position: relative;
     float: left;
 	left: 0px;
-	width: 600px;
+	width: 405px;
 	height: 40px;
 	top: 7px;
 	text-decoration: none;
@@ -696,4 +696,14 @@ h2.feature {
 
 #missing {
 	font-size: 30px;
+}
+
+.social {
+
+	padding-top: 15px;
+}
+
+.flattr {
+	float: left;
+	margin-right: 10px;
 }
