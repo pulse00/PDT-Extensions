@@ -22,5 +22,14 @@
             class="com.dubture.pdt.core.codeassist.CompletionStrategyFactory">
       </factory>
    </extension>
+   <extension
+         point="org.eclipse.ltk.core.refactoring.moveParticipants">
+      <moveParticipant
+            class="com.dubture.pdt.core.refactoring.ClassMoveParticipant"
+            id="com.dubture.pdt.core.moveParticipant"
+            name="pdtMoveParticipant">
+         <enablement></enablement>
+      </moveParticipant>
+   </extension>
 
 </plugin>
