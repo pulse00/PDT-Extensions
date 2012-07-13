@@ -6,6 +6,14 @@
 
 The plugin is still beta.
 
+### Notice about the formatter
+
+There is a discussion going on whether to move the formatter from zend-studio into PDT core, or refactor the one from this plugin and use this in PDT-core.
+For more info see this bugzilla issue: https://bugs.eclipse.org/bugs/show_bug.cgi?id=320130
+
+If you encounter any formatter bugs, feel free to open an issue. But until the decision which formatter to 
+use in PDT core is made, i won't put any efforts in fixing bugs related to it.
+
 ### Requirements
 
 - Eclipse >= 3.7.2 (aka Indigo SR2)
