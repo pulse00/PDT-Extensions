@@ -876,7 +876,7 @@ public class ASTFormatter extends RunThroughVisitor {
 				output.indent(+1);
 				indent = 1;
 				output.newLine();
-			} else {
+			} else if (!elements.isEmpty() ) {
 				output.spaceIf(options.insert_space_after_opening_brace_in_array_initializer); // 代用
 			}
 			offset = token.getEnd();
@@ -995,7 +995,7 @@ public class ASTFormatter extends RunThroughVisitor {
 			if (options.insert_new_line_before_closing_brace_in_array_initializer // 代用
 					&& startLine != output.getLineNumber()) {
 				output.newLine();
-			} else {
+			} else if (!elements.isEmpty()){
 				output.spaceIf(options.insert_space_before_closing_brace_in_array_initializer); // 代用
 			}
 			output.append(")");
