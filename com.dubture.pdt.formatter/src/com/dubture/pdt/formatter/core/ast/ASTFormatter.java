@@ -7,7 +7,6 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.text.BadLocationException;
@@ -876,7 +875,7 @@ public class ASTFormatter extends RunThroughVisitor {
 				output.indent(+1);
 				indent = 1;
 				output.newLine();
-			} else {
+			} else if (!elements.isEmpty()) {
 				output.spaceIf(options.insert_space_after_opening_brace_in_array_initializer); // 代用
 			}
 			offset = token.getEnd();
@@ -995,7 +994,7 @@ public class ASTFormatter extends RunThroughVisitor {
 			if (options.insert_new_line_before_closing_brace_in_array_initializer // 代用
 					&& startLine != output.getLineNumber()) {
 				output.newLine();
-			} else {
+			} else if (!elements.isEmpty()) {
 				output.spaceIf(options.insert_space_before_closing_brace_in_array_initializer); // 代用
 			}
 			output.append(")");
@@ -1805,7 +1804,9 @@ public class ASTFormatter extends RunThroughVisitor {
 			walk(offset, token.getStart());
 			output.spaceIf(options.insert_space_before_opening_paren_in_method_invocation);
 			output.append("(");
-			output.spaceIf(options.insert_space_after_opening_paren_in_method_invocation);
+			if (!ctorParams.isEmpty()) {
+				output.spaceIf(options.insert_space_after_opening_paren_in_method_invocation);
+			}
 			offset = token.getEnd();
 		} else {
 			if (!ctorParams.isEmpty()) {
@@ -1814,11 +1815,8 @@ public class ASTFormatter extends RunThroughVisitor {
 			}
 		}
 
-		if (ctorParams.isEmpty()
-				&& !options.insert_space_after_opening_paren_in_method_invocation
-				&& !options.insert_space_before_closing_paren_in_method_invocation
-				&& options.insert_space_between_empty_parens_in_method_invocation) {
-			output.space();
+		if (ctorParams.isEmpty()) {
+			output.spaceIf(options.insert_space_between_empty_parens_in_method_invocation);
 		}
 
 		if (split && !forceSplit) {
@@ -2794,17 +2792,16 @@ public class ASTFormatter extends RunThroughVisitor {
 			walk(offset, token.getStart()); // ""
 			output.spaceIf(options.insert_space_before_opening_paren_in_method_declaration);
 			output.append("(");
-			output.spaceIf(options.insert_space_after_opening_paren_in_method_declaration);
+			if (!formalParameters.isEmpty()) {
+				output.spaceIf(options.insert_space_after_opening_paren_in_method_declaration);
+			}
 			offset = token.getEnd();
 		} else {
 			FormatterPlugin.warning("(", functionDeclaration, offset, end);
 		}
 
-		if (formalParameters.isEmpty()
-				&& !options.insert_space_after_opening_paren_in_method_declaration
-				&& !options.insert_space_before_closing_paren_in_method_declaration
-				&& options.insert_space_between_empty_parens_in_method_declaration) {
-			output.space();
+		if (formalParameters.isEmpty()) {
+			output.spaceIf(options.insert_space_between_empty_parens_in_method_declaration);
 		}
 
 		boolean fsplit = split;
@@ -2920,7 +2917,9 @@ public class ASTFormatter extends RunThroughVisitor {
 		token = findToken(offset, end, TokenTypes.PHP_TOKEN, ")");
 		if (token != null) {
 			walk(offset, token.getStart()); // ""
-			output.spaceIf(options.insert_space_before_closing_paren_in_method_declaration);
+			if (!formalParameters.isEmpty()) {
+				output.spaceIf(options.insert_space_before_closing_paren_in_method_declaration);
+			}
 			output.append(")");
 			offset = token.getEnd();
 		} else {
@@ -2981,7 +2980,9 @@ public class ASTFormatter extends RunThroughVisitor {
 			walk(offset, token.getStart());
 			output.spaceIf(options.insert_space_before_opening_paren_in_method_invocation);
 			output.append("(");
-			output.spaceIf(options.insert_space_after_opening_paren_in_method_invocation);
+			if (!parameters.isEmpty()) {
+				output.spaceIf(options.insert_space_after_opening_paren_in_method_invocation);
+			}
 			offset = token.getEnd();
 		} else {
 			if (isReserved) {
@@ -2995,11 +2996,8 @@ public class ASTFormatter extends RunThroughVisitor {
 			}
 		}
 
-		if (parameters.isEmpty()
-				&& !options.insert_space_after_opening_paren_in_method_invocation
-				&& !options.insert_space_before_closing_paren_in_method_invocation
-				&& options.insert_space_between_empty_parens_in_method_invocation) {
-			output.space();
+		if (parameters.isEmpty()) {
+			output.spaceIf(options.insert_space_between_empty_parens_in_method_invocation);
 		}
 
 		if (split && !forceSplit) {
@@ -3098,7 +3096,9 @@ public class ASTFormatter extends RunThroughVisitor {
 		token = findToken(offset, end, TokenTypes.PHP_TOKEN, ")");
 		if (token != null) {
 			walk(offset, token.getStart());
-			output.spaceIf(options.insert_space_before_closing_paren_in_method_invocation);
+			if (!parameters.isEmpty()) {
+				output.spaceIf(options.insert_space_before_closing_paren_in_method_invocation);
+			}
 			output.append(")");
 			offset = token.getEnd();
 		} else {
