@@ -319,6 +319,7 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 	protected void createContentControls(Composite composite, int nColumns) {
 	
 		createContainerControls(composite, nColumns);
+		
 		createClassControls(composite, nColumns);
 		
 		if (initialFolder != null) {
@@ -329,185 +330,19 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 
 	protected void createClassControls(final Composite container, int nColumns) {
 		
-		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.widthHint = 200;
+		createNameRow(container);
 		
-		filenameLabel = new Label(container, SWT.NONE);
-		filenameLabel.setText("Filename:");
+		createModifierRow(container);
 		
-		filenameText = new Text(container, SWT.BORDER | SWT.SINGLE);
-		filenameText.setLayoutData(gd);
+		createFilenameRow(container);
 		
-		if (initialFilename != null) {
-			filenameText.setText(initialFilename);
-			filename = initialFilename;
-		}
+		createNamespaceRow(container);
 		
-		filenameText.addModifyListener(new ModifyListener() {
-			
-			@Override
-			public void modifyText(ModifyEvent e)
-			{
-				filename= filenameText.getText();
-				dialogChanged();
-				
-			}
-		});
+		createSuperclassRow(container);	
 		
-		Label ph3= new Label(container, SWT.None);
-		ph3.setText("");		
-		
-		namespaceLabel = new Label(container, SWT.NONE);
-		namespaceLabel.setText("Namespace:");
-		
-		namespaceText = new Text(container, SWT.BORDER | SWT.SINGLE);
-		namespaceText.setLayoutData(gd);
-		
-		if (initialNamespace != null) {
-			namespaceText.setText(initialNamespace);
-		}
-		
-		namespaceText.addKeyListener(new KeyListener() {
-			
-			@Override
-			public void keyReleased(KeyEvent e) {
-				namespace = namespaceText.getText();				
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent e) {
-				
-			}
-		});
-		
-		
-		List<INamespaceResolver> resolvers = ExtensionManager.getDefault().getNamespaceResolvers();
-		
-		IScriptFolder folder = getScriptFolder();
-		
-		for (INamespaceResolver resolver : resolvers) {			
-			String ns = resolver.resolve(folder);			
-			if (ns != null && ns.length() > 0) {
-				namespaceText.setText(ns);				
-				break;
-			}
-		}
-		
-		namespace = namespaceText.getText();
-		
-		Label ph1= new Label(container, SWT.None);
-		ph1.setText("");		
-		
-		superClassLabel = new Label(container, SWT.NONE);
-		superClassLabel.setText("Superclass:");
-		
-		superClassText = new Text(container, SWT.BORDER | SWT.SINGLE);
-		superClassText.setLayoutData(gd);
-		superClassText.addKeyListener(new KeyListener() {
-			
-			@Override
-			public void keyReleased(KeyEvent e) {
-				sClass = superClassText.getText();
-			}
-			
-			@Override
-			public void keyPressed(KeyEvent e) {
-				
-			}
-		});
-		
-		superClassText.addFocusListener(new FocusListener() {
-			
-			@Override
-			public void focusLost(FocusEvent e) {				
-//				decoration.hide();				
-			}
-			
-			@Override
-			public void focusGained(FocusEvent e) {
-//				decoration.show();
+		createSeparator(container);		
 
-			}
-		});
-
-
-		//TODO: find a way to retrieve the fully qualified name in the autocompletion
-		// this doesn't perform when simply calling type.getFullyQualifiedname() in the proposal handler
-		
-//		acField = new AutoCompleteField(superClassText, new TextContentAdapter(), null);
-		
-//		decoration = new ControlDecoration(superClassLabel, SWT.RIGHT | SWT.TOP);
-		
-//		Image errorImage = FieldDecorationRegistry.getDefault()
-//		        .getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL).getImage();
-//		decoration.setImage(errorImage);
-//		decoration.setDescriptionText("Content assist available.");
-//		decoration.setShowHover(true);
-//		decoration.hide();
-		
-		Button button = new Button(container, SWT.NULL);
-		button.setText("Browse...");
-				
-		button.addSelectionListener(superClassSelectionListener);	
-
-		
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.horizontalSpan = nColumns;
-		gd.heightHint = 20;
-		
-		Label separator = new Label (container, SWT.SEPARATOR | SWT.HORIZONTAL);
-		separator.setLayoutData(gd);		
-		
-		
-		targetResourceLabel = new Label(container, SWT.NULL);
-		targetResourceLabel.setText("Name:");
-
-		fileText = new Text(container, SWT.BORDER | SWT.SINGLE);
-		fileText.setFocus();
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-				
-		fileText.setLayoutData(gd);
-		
-		if (initialClassName != null) {
-			fileText.setText(initialClassName);
-			className = initialClassName;
-		}
-		
-		fileText.addModifyListener(new ModifyListener() {
-			public void modifyText(final ModifyEvent e) {
-				dialogChanged();
-				className = fileText.getText();
-				filename = className + ".php";
-				filenameText.setText(filename );
-			}
-		});
-		
-		
-		Label empty = new Label(container, SWT.None);
-		empty.setText("");
-
-		Label modifierLabel = new Label(container, SWT.NULL);
-		modifierLabel.setText("Modifiers:");
-
-		gd = new GridData();
-		gd.verticalAlignment = SWT.LEFT;		
-		
-		RowLayout modifierLayout = new RowLayout(SWT.HORIZONTAL);
-		
-		Composite modifierContainer = new Composite(container, SWT.NULL);
-		modifierContainer.setLayout(modifierLayout);
-		
-		abstractCheckbox = new Button(modifierContainer, SWT.CHECK | SWT.LEFT);	
-		abstractCheckbox.setText("abstract");
-		abstractCheckbox.addSelectionListener(changeListener);
-		
-	    finalCheckbox = new Button(modifierContainer, SWT.CHECK | SWT.LEFT);
-	    finalCheckbox.setText("final");		
-	    finalCheckbox.addSelectionListener(changeListener);
-		
-	    Label dummyLabel = new Label(container, SWT.NULL);
-	    dummyLabel.setText("");
-	    
+		GridData gd;
 		gd = new GridData();
 		gd.verticalAlignment = SWT.TOP;
 		
@@ -618,13 +453,193 @@ public class ClassCreationWizardPage extends NewSourceModulePage {
 //		Dialog.applyDialogFont(container);
 				
 	}
+
+	private void createSeparator(final Composite container) {
+		GridData gd;
+		gd = new GridData(GridData.FILL_HORIZONTAL, SWT.CENTER, true, true, 3, 1);
+		gd.heightHint = 20;
+		
+		Label separator = new Label (container, SWT.SEPARATOR | SWT.HORIZONTAL);
+		separator.setLayoutData(gd);
+	}
+
+	private void createModifierRow(final Composite container) {
+		Label modifierLabel = new Label(container, SWT.NULL);
+		modifierLabel.setText("Modifiers:");
+
+		RowLayout modifierLayout = new RowLayout(SWT.HORIZONTAL);
+		
+		Composite modifierContainer = new Composite(container, SWT.NULL);
+		modifierContainer.setLayout(modifierLayout);
+		
+		abstractCheckbox = new Button(modifierContainer, SWT.CHECK | SWT.LEFT);	
+		abstractCheckbox.setText("abstract");
+		abstractCheckbox.addSelectionListener(changeListener);
+		
+	    finalCheckbox = new Button(modifierContainer, SWT.CHECK | SWT.LEFT);
+	    finalCheckbox.setText("final");		
+	    finalCheckbox.addSelectionListener(changeListener);
+		
+	    @SuppressWarnings("unused")
+		Label emptySpace = new Label(container, SWT.NULL);
+	}
+
+	private void createFilenameRow(final Composite container) {
+		filenameLabel = new Label(container, SWT.NONE);
+		filenameLabel.setText("Filename:");
+		
+		filenameText = new Text(container, SWT.BORDER | SWT.SINGLE);
+		filenameText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+		
+		if (initialFilename != null) {
+			filenameText.setText(initialFilename);
+			filename = initialFilename;
+		}
+		
+		filenameText.addModifyListener(new ModifyListener() {
+			
+			@Override
+			public void modifyText(ModifyEvent e)
+			{
+				filename= filenameText.getText();
+				dialogChanged();
+				
+			}
+		});
+		
+		@SuppressWarnings("unused")
+		Label emptySpace = new Label(container, SWT.NULL);
+	}
+
+	private void createNamespaceRow(final Composite container) {
+		namespaceLabel = new Label(container, SWT.NONE);
+		namespaceLabel.setText("Namespace:");
+		
+		namespaceText = new Text(container, SWT.BORDER | SWT.SINGLE);
+		namespaceText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true));
+		
+		if (initialNamespace != null) {
+			namespaceText.setText(initialNamespace);
+		}
+		
+		namespaceText.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyReleased(KeyEvent e) {
+				namespace = namespaceText.getText();				
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				
+			}
+		});
+		
+		List<INamespaceResolver> resolvers = ExtensionManager.getDefault().getNamespaceResolvers();
+		
+		IScriptFolder folder = getScriptFolder();
+		
+		for (INamespaceResolver resolver : resolvers) {			
+			String ns = resolver.resolve(folder);			
+			if (ns != null && ns.length() > 0) {
+				namespaceText.setText(ns);				
+				break;
+			}
+		}
+		namespace = namespaceText.getText();
+		
+		@SuppressWarnings("unused")
+		Label emptySpace = new Label(container, SWT.NULL);
+	}
+
+	private void createSuperclassRow(final Composite container) {
+		
+		superClassLabel = new Label(container, SWT.NONE);
+		superClassLabel.setText("Superclass:");
+		
+		superClassText = new Text(container, SWT.BORDER | SWT.SINGLE);
+		superClassText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+		superClassText.addKeyListener(new KeyListener() {
+			
+			@Override
+			public void keyReleased(KeyEvent e) {
+				sClass = superClassText.getText();
+			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+				
+			}
+		});
+		
+		superClassText.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {				
+//				decoration.hide();				
+			}
+			
+			@Override
+			public void focusGained(FocusEvent e) {
+//				decoration.show();
+
+			}
+		});
+
+
+		//TODO: find a way to retrieve the fully qualified name in the autocompletion
+		// this doesn't perform when simply calling type.getFullyQualifiedname() in the proposal handler
+		
+//		acField = new AutoCompleteField(superClassText, new TextContentAdapter(), null);
+		
+//		decoration = new ControlDecoration(superClassLabel, SWT.RIGHT | SWT.TOP);
+		
+//		Image errorImage = FieldDecorationRegistry.getDefault()
+//		        .getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL).getImage();
+//		decoration.setImage(errorImage);
+//		decoration.setDescriptionText("Content assist available.");
+//		decoration.setShowHover(true);
+//		decoration.hide();
+		
+		
+		Button button = new Button(container, SWT.NULL);
+		button.setText("Browse...");
+		button.addSelectionListener(superClassSelectionListener);
+		button.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+	}
+
+	private void createNameRow(final Composite container) {
+		
+		targetResourceLabel = new Label(container, SWT.NULL);
+		targetResourceLabel.setText("Name:");
+
+		fileText = new Text(container, SWT.BORDER | SWT.SINGLE);
+		fileText.setFocus();
+		fileText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 1, 1));
+		
+		if (initialClassName != null) {
+			fileText.setText(initialClassName);
+			className = initialClassName;
+		}
+		
+		fileText.addModifyListener(new ModifyListener() {
+			public void modifyText(final ModifyEvent e) {
+				dialogChanged();
+				className = fileText.getText();
+				filename = className + ".php";
+				filenameText.setText(filename );
+			}
+		});
+		
+		@SuppressWarnings("unused")
+		Label emptySpace = new Label(container, SWT.NULL);
+	}
 	
 	protected String getContainerName() {
 		
 		return getScriptFolderText();		
 		
 	}
-
 
 	protected void dialogChanged() {
 		
