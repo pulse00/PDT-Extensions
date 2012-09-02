@@ -51,6 +51,14 @@ public class NewLinesTabPage extends FormatterTabPage {
 
 		final Group newlinesGroup = createGroup(numColumns, composite,
 				FormatterMessages.NewLinesTabPage_newlines_group_title);
+		
+		createPref(
+				newlinesGroup,
+				numColumns,
+				FormatterMessages.NewLinesTabPage_newlines_group_option_after_namespace_declaration,
+				CodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AFTER_NAMESPACE_DECLARATION,
+				DO_NOT_INSERT_INSERT);
+		
 		createPref(
 				newlinesGroup,
 				numColumns,

@@ -1594,6 +1594,21 @@ public class CodeFormatterConstants {
 	 */
 	public static final String FORMATTER_INSERT_NEW_LINE_IN_EMPTY_TYPE_DECLARATION = FormatterPlugin.OPTION_ID
 			+ ".formatter.insert_new_line_in_empty_type_declaration"; //$NON-NLS-1$
+	
+	/**
+	 * <pre>
+	 * FORMATTER / Option to insert a new line after a namespace declaration
+	 *     - option id:         "org.eclipse.jdt.core.formatter.insert_new_line_after_namespace_declaration"
+	 *     - possible values:   { INSERT, DO_NOT_INSERT }
+	 *     - default:           INSERT
+	 * </pre>
+	 * @see FormatterPlugin#INSERT
+	 * @see FormatterPlugin#DO_NOT_INSERT
+	 * @since 3.0
+	 */
+	public static final String FORMATTER_INSERT_NEW_LINE_AFTER_NAMESPACE_DECLARATION = FormatterPlugin.OPTION_ID
+			+ ".formatter.insert_new_line_after_namespace_declaration"; //$NON-NLS-1$
+	
 
 	/**
 	 * <pre>
