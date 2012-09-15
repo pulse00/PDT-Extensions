@@ -21,8 +21,7 @@ import org.eclipse.php.internal.ui.editor.PHPStructuredTextViewer;
 import org.eclipse.php.internal.ui.editor.contentassist.PHPCompletionProposal;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.texteditor.ITextEditor;
-
-import com.dubture.pdt.ui.codemanipulation.CodeGeneration;
+import com.dubture.pdt.ui.codemanipulation.MethodStub;
 
 /**
  *
@@ -107,7 +106,7 @@ public class SuperclassMethodCompletionProposal extends PHPCompletionProposal {
 					String indent = String.valueOf(indentChar);
 
 					String code = "";
-					code += CodeGeneration.getMethodStub(method.getElementName(), method, indent, TextUtilities.getDefaultLineDelimiter(document), true);
+					code += MethodStub.getMethodStub(method.getElementName(), method, indent, TextUtilities.getDefaultLineDelimiter(document), true);
 					return code;
 
 				}

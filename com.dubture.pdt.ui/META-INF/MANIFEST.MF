@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: com.dubture.pdt.ui;singleton:=true
-Bundle-Version: 1.0.12
+Bundle-Version: 1.0.13
 Bundle-Activator: com.dubture.pdt.ui.PDTUIPlugin
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.core.runtime,
@@ -23,4 +23,4 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
 Export-Package: com.dubture.pdt.ui.codemanipulation,
  com.dubture.pdt.ui.extension,
- com.dubture.pdt.ui.wizards.classes
+ com.dubture.pdt.ui.wizards
