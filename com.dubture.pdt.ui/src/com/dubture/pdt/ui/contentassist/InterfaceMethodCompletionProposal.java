@@ -28,10 +28,10 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import com.dubture.pdt.core.compiler.MissingMethodImplementation;
 import com.dubture.pdt.core.visitor.PDTVisitor;
 import com.dubture.pdt.formatter.core.ast.Formatter;
+import com.dubture.pdt.internal.ui.codemanipulation.ClassStub;
+import com.dubture.pdt.internal.ui.codemanipulation.MethodStub;
 import com.dubture.pdt.ui.PDTPluginImages;
 import com.dubture.pdt.ui.PDTUIPlugin;
-import com.dubture.pdt.ui.codemanipulation.ClassStub;
-import com.dubture.pdt.ui.codemanipulation.MethodStub;
 
 /**
  *

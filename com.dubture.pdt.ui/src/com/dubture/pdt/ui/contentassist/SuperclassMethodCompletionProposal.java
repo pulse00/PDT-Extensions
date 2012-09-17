@@ -21,7 +21,8 @@ import org.eclipse.php.internal.ui.editor.PHPStructuredTextViewer;
 import org.eclipse.php.internal.ui.editor.contentassist.PHPCompletionProposal;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.texteditor.ITextEditor;
-import com.dubture.pdt.ui.codemanipulation.MethodStub;
+
+import com.dubture.pdt.internal.ui.codemanipulation.MethodStub;
 
 /**
  *

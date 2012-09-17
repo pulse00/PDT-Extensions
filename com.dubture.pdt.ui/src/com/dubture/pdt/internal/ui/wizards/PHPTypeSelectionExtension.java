@@ -6,7 +6,7 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
-package com.dubture.pdt.ui.wizards;
+package com.dubture.pdt.internal.ui.wizards;
 
 import org.eclipse.dltk.ui.dialogs.ITypeInfoFilterExtension;
 import org.eclipse.dltk.ui.dialogs.ITypeInfoRequestor;

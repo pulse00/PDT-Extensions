@@ -13,7 +13,7 @@
          point="org.eclipse.ui.newWizards">         
 		<wizard
         	category="org.eclipse.php.project.ui"
-        	class="com.dubture.pdt.ui.wizards.ClassCreationWizard"
+        	class="com.dubture.pdt.internal.ui.wizards.NewClassWizard"
         	icon="ico/full/obj16/phpclassdata.gif"
         	id="com.dubture.pdt.ui.wizards.classes.ClassCreationWizard"
         	name="%wizard.new.class"
@@ -21,7 +21,7 @@
         </wizard>
   <wizard
         category="org.eclipse.php.project.ui"
-        class="com.dubture.pdt.ui.wizards.CreateInterfaceWizard"
+        class="com.dubture.pdt.internal.ui.wizards.CreateInterfaceWizard"
         icon="ico/full/obj16/newint_wiz.gif"
         id="com.dubture.pdt.ui.wizards.interface"
         name="%wizard.new.interface">

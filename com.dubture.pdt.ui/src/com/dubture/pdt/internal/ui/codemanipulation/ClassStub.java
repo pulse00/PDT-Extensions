@@ -8,9 +8,8 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
-package com.dubture.pdt.ui.codemanipulation;
+package com.dubture.pdt.internal.ui.codemanipulation;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,10 +21,8 @@ import org.eclipse.core.runtime.preferences.IScopeContext;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.dltk.core.IScriptProject;
 import org.eclipse.dltk.core.IType;
-import org.eclipse.dltk.ti.types.IEvaluatedType;
 import org.eclipse.php.internal.core.PHPCoreConstants;
 import org.eclipse.php.internal.core.PHPCorePlugin;
-import com.dubture.pdt.core.util.PDTModelUtils;
 
 /**
  * Utilities for class generation.
@@ -42,6 +39,7 @@ public class ClassStub {
 	private IType superclass;
 	private boolean isFinal;
 	private boolean isAbstract;
+	private List<IType> interfaces;
 
 	public ClassStub(ClassStubParameter parameters) {
 		name = parameters.getName();
@@ -49,6 +47,7 @@ public class ClassStub {
 		namespace = parameters.getNamespace();
 		isFinal = parameters.isFinalClass();
 		isAbstract = parameters.isAbstractClass();
+		interfaces = parameters.getInterfaces();
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -103,9 +102,6 @@ public class ClassStub {
 
 		buffer.append(generateNamespacePart());
 
-		//
-		// generateInterfacesPart(parameterObject, lineDelim, buffer);
-		//
 		// try {
 		// if (parameterObject.isComments()) {
 		// String typeComment =
@@ -121,49 +117,19 @@ public class ClassStub {
 		if (isFinal == true) {
 			buffer.append("final ");
 		}
-		
+
 		if (isAbstract == true) {
 			buffer.append("abstract ");
 		}
-		
+
 		buffer.append("class " + name);
 
 		buffer.append(generateSuperclassPart());
 
-		// if (parameterObject.getInterfaces() != null &&
-		// parameterObject.getInterfaces().size() > 0) {
-		// buffer.append(" implements ");
-		//
-		// int i = 0;
-		//
-		// for (IType iface : parameterObject.getInterfaces()) {
-		// buffer.append(iface.getElementName());
-		//
-		// if (i++ < parameterObject.getInterfaces().size() - 1) {
-		// buffer.append(", ");
-		// }
-		// }
-		// }
-		//
+		buffer.append(generateInterfacesPart());
+
 		buffer.append("{}");
-		//
-		// Map options = setupOptions(parameterObject.getProject());
-		// DefaultCodeFormattingProcessor formatter = new
-		// DefaultCodeFormattingProcessor(options);
-		// String indent = formatter.createIndentationString(1);
-		//
-		// if (parameterObject.getSuperclass() != null) {
-		// try {
-		// for (IMethod method : parameterObject.getSuperclass().getMethods()) {
-		//
-		// if (PHPFlags.isAbstract(method.getFlags()) &&
-		// parameterObject.isAbstractMethods()) {
-		// buffer.append(getMethodStub(parameterObject.getName(), method,
-		// indent, lineDelim,
-		// parameterObject.isComments()));
-		// buffer.append(lineDelim);
-		// }
-		//
+
 		// if (method.isConstructor() && parameterObject.isConstructor()) {
 		// buffer.append(getMethodStub(parameterObject.getName(), method,
 		// indent, lineDelim,
@@ -175,18 +141,6 @@ public class ClassStub {
 		// }
 		// }
 		//
-		// for (IType type : parameterObject.getInterfaces()) {
-		// try {
-		// for (IMethod method : type.getMethods()) {
-		// buffer.append(getMethodStub(parameterObject.getName(), method,
-		// indent, lineDelim,
-		// parameterObject.isComments()));
-		// }
-		// } catch (ModelException e) {
-		// e.printStackTrace();
-		// }
-		// }
-
 		code = buffer.toString();
 	}
 
@@ -199,28 +153,25 @@ public class ClassStub {
 		return "";
 	}
 
-	private void generateInterfacesPart(ClassStubParameter parameterObject, String lineDelim, StringBuilder buffer) {
-		List<IType> types = new ArrayList<IType>();
-		if (parameterObject.getSuperclass() != null)
-			types.add(parameterObject.getSuperclass());
+	private String generateInterfacesPart() {
 
-		types.addAll(parameterObject.getInterfaces());
+		String code = new String();
+		if (!interfaces.isEmpty()) {
+			code = " implements";
 
-		List<IEvaluatedType> useStatements = PDTModelUtils.collectUseStatements(types,
-				parameterObject.isAbstractMethods());
-
-		if (useStatements.size() > 0) {
-			buffer.append(lineDelim + lineDelim);
-			for (IEvaluatedType useStatement : useStatements) {
-
-				String typeName = useStatement.getTypeName();
-
-				if (typeName.startsWith("\\")) {
-					typeName = typeName.replaceFirst("\\\\", "");
+			int size = interfaces.size();
+			int i = 1;
+			for (IType interfaceObject : interfaces) {
+				if (i < size) {
+					code += " " + interfaceObject.getElementName() + ",";
+				} else {
+					code += " " + interfaceObject.getElementName();
 				}
-				buffer.append(String.format("use %s;%s", typeName, lineDelim));
+				i = i + 1;
 			}
 		}
+
+		return code;
 	}
 
 	private String generateNamespacePart() {
@@ -231,6 +182,14 @@ public class ClassStub {
 
 		if (superclass != null && superclass.getParent() != null && getNamespace(superclass) != null) {
 			code += "use " + getNamespace(superclass) + ";\n";
+		}
+		
+		if (interfaces != null) {
+			for (IType interfaceObject : interfaces) {
+				if (interfaceObject.getParent() != null && getNamespace(interfaceObject) != null) {
+					code += "use " + getNamespace(superclass) + ";\n";
+				}
+			}
 		}
 
 		code += "\n";
