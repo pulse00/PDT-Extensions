@@ -11,8 +11,19 @@
 package com.dubture.pdt.internal.ui.wizards;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+
+// Do we need move this class to this plugin?
+import org.eclipse.dltk.internal.ui.dialogs.OpenTypeSelectionDialog2;
+import org.eclipse.dltk.internal.ui.wizards.dialogfields.DialogField;
+import org.eclipse.dltk.internal.ui.wizards.dialogfields.IDialogFieldListener;
+import org.eclipse.dltk.internal.ui.wizards.dialogfields.IStringButtonAdapter;
+import org.eclipse.dltk.internal.ui.wizards.dialogfields.ITreeListAdapter;
+import org.eclipse.dltk.internal.ui.wizards.dialogfields.SelectionButtonDialogField;
+import org.eclipse.dltk.internal.ui.wizards.dialogfields.SelectionButtonDialogFieldGroup;
+import org.eclipse.dltk.internal.ui.wizards.dialogfields.StringButtonDialogField;
+import org.eclipse.dltk.internal.ui.wizards.dialogfields.StringDialogField;
+import org.eclipse.dltk.internal.ui.wizards.dialogfields.TreeListDialogField;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
@@ -20,39 +31,22 @@ import org.eclipse.dltk.core.IScriptFolder;
 import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.IType;
 import org.eclipse.dltk.core.search.IDLTKSearchConstants;
-import org.eclipse.dltk.internal.core.SourceType;
-import org.eclipse.dltk.internal.ui.dialogs.OpenTypeSelectionDialog2;
-import org.eclipse.dltk.internal.ui.wizards.dialogfields.DialogField;
-import org.eclipse.dltk.internal.ui.wizards.dialogfields.IDialogFieldListener;
-import org.eclipse.dltk.internal.ui.wizards.dialogfields.IStringButtonAdapter;
-import org.eclipse.dltk.internal.ui.wizards.dialogfields.ITreeListAdapter;
-import org.eclipse.dltk.internal.ui.wizards.dialogfields.SelectionButtonDialogFieldGroup;
-import org.eclipse.dltk.internal.ui.wizards.dialogfields.StringButtonDialogField;
-import org.eclipse.dltk.internal.ui.wizards.dialogfields.StringDialogField;
-import org.eclipse.dltk.internal.ui.wizards.dialogfields.TreeListDialogField;
+
 import org.eclipse.dltk.ui.DLTKUIPlugin;
 import org.eclipse.dltk.ui.dialogs.StatusInfo;
 import org.eclipse.dltk.ui.wizards.NewSourceModulePage;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.text.IDocument;
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.php.internal.core.project.PHPNature;
 import org.eclipse.php.internal.ui.PHPUILanguageToolkit;
 import org.eclipse.php.internal.ui.PHPUIMessages;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.PlatformUI;
@@ -83,7 +77,6 @@ public class NewClassWizardPage extends NewSourceModulePage {
 	protected String initialFilename = null;
 	protected IScriptFolder initialFolder = null;
 
-
 	// Controls field in dialog.
 	private StringDialogField classNameField;
 	private StringDialogField fileNameField;
@@ -92,10 +85,8 @@ public class NewClassWizardPage extends NewSourceModulePage {
 	private StringDialogField namespaceField;
 	private SelectionButtonDialogFieldGroup classModifierField;
 	private TreeListDialogField interfaceDialog;
-	// TODO: Check creation process.
-	private Button commentCheckbox;
-	private Button superClassConstructors;
-	private Button abstractMethods;
+	private SelectionButtonDialogFieldGroup methodStubButtons;
+	private SelectionButtonDialogField commentsButton;
 
 	public NewClassWizardPage(final ISelection selection, String initialFileName) {
 		super();
@@ -149,7 +140,6 @@ public class NewClassWizardPage extends NewSourceModulePage {
 	}
 
 	private void createClassControls() {
-
 		createNameControls();
 
 		createClassModifierControls();
@@ -160,87 +150,45 @@ public class NewClassWizardPage extends NewSourceModulePage {
 
 		createSuperClassControls();
 
-		createSeparator();
+		createInterfaceControls();
 
-		createInterfaceArea();
+		createMethodStubControls();
 
-		createAdditionalPart();
-
+		createCommentsControls();
 	}
 
-	private void createAdditionalPart() {
+	private void createMethodStubControls() {
+
 		GridData gd;
-
 		gd = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
 		gd.horizontalSpan = nColumns;
-		gd.heightHint = 20;
+		Label label = new Label(container, SWT.None);
+		label.setText("Which method stubs would you like to create?");
+		label.setLayoutData(gd);
 
-		Label methodLabel = new Label(container, SWT.NONE);
-		methodLabel.setText("Which method stubs would you like to create?");
-		methodLabel.setLayoutData(gd);
+		methodStubButtons = new SelectionButtonDialogFieldGroup(SWT.CHECK, new String[] { "Su&perclass constructor",
+				"In&herited abstract methods" }, 1);
+		methodStubButtons.doFillIntoGrid(container, nColumns - 1);
+		DialogField.createEmptySpace(container);
 
-		Label methodDummy = new Label(container, SWT.NONE);
-		methodDummy.setText("");
+		methodStubButtons.setSelection(1, true);
+	}
 
-		gd = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
-		gd.horizontalSpan = nColumns - 1;
-
-		superClassConstructors = new Button(container, SWT.CHECK);
-		superClassConstructors.setText("Su&perclass constructor");
-		superClassConstructors.setLayoutData(gd);
-		superClassConstructors.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				superClassConstructors.getSelection();
-			}
-		});
-
-		Label methodDummy2 = new Label(container, SWT.NONE);
-		methodDummy2.setText("");
-
-		abstractMethods = new Button(container, SWT.CHECK);
-		abstractMethods.setText("In&herited abstract methods");
-		abstractMethods.setSelection(true);
-		abstractMethods.setLayoutData(gd);
-		abstractMethods.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-
-				abstractMethods.getSelection();
-			}
-		});
-
+	private void createCommentsControls() {
+		GridData gd;
 		gd = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
 		gd.horizontalSpan = nColumns;
-		gd.heightHint = 20;
 		Label commentLabel = new Label(container, SWT.NONE);
 		commentLabel.setText("Do you want to add comments?");
 		commentLabel.setLayoutData(gd);
 
-		Label dummy = new Label(container, SWT.NONE);
-		dummy.setText("");
-
-		gd = new GridData(GridData.HORIZONTAL_ALIGN_BEGINNING);
-		gd.horizontalSpan = nColumns - 1;
-
-		commentCheckbox = new Button(container, SWT.CHECK);
-		commentCheckbox.setText("&Generate element comments");
-		commentCheckbox.setLayoutData(gd);
-		commentCheckbox.addSelectionListener(new SelectionAdapter() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				commentCheckbox.getSelection();
-			}
-		});
-
-		// dialogChanged();
-		// setControl(container);
-		// Dialog.applyDialogFont(container);
+		DialogField.createEmptySpace(container);
+		commentsButton = new SelectionButtonDialogField(SWT.CHECK);
+		commentsButton.setLabelText("&Generate element comments");
+		commentsButton.doFillIntoGrid(container, nColumns - 1);
 	}
 
-	private void createInterfaceArea() {
+	private void createInterfaceControls() {
 
 		String[] buttons = { "&Add...", "&Remove" };
 		interfaceDialog = new TreeListDialogField(new ITreeListAdapter() {
@@ -252,31 +200,25 @@ public class NewClassWizardPage extends NewSourceModulePage {
 
 			@Override
 			public void keyPressed(TreeListDialogField field, KeyEvent event) {
-				// TODO Auto-generated method stub
-
 			}
 
 			@Override
 			public boolean hasChildren(TreeListDialogField field, Object element) {
-				// TODO Auto-generated method stub
 				return false;
 			}
 
 			@Override
 			public Object getParent(TreeListDialogField field, Object element) {
-				// TODO Auto-generated method stub
 				return null;
 			}
 
 			@Override
 			public Object[] getChildren(TreeListDialogField field, Object element) {
-				// TODO Auto-generated method stub
 				return null;
 			}
 
 			@Override
 			public void doubleClicked(TreeListDialogField field) {
-				// TODO Auto-generated method stub
 
 			}
 
@@ -288,48 +230,37 @@ public class NewClassWizardPage extends NewSourceModulePage {
 					int result = dialog.open();
 					if (result != IDialogConstants.OK_ID)
 						return;
-					IType interfaceObject;
 					Object[] types = dialog.getResult();
-					if (types != null && types.length > 0) {
-						for (int i = 0; i < types.length; i++) {
-							interfaceObject = (IType) types[i];
-							interfaceDialog.addElement(interfaceObject);
-						}
+					for (Object type : types) {
+						field.addElement((IType) type);
 					}
 				}
 
 			}
-		}, buttons , new ILabelProvider() {
+		}, buttons, new ILabelProvider() {
 
 			@Override
 			public void removeListener(ILabelProviderListener listener) {
-				// TODO Auto-generated method stub
 
 			}
 
 			@Override
 			public boolean isLabelProperty(Object element, String property) {
-				// TODO Auto-generated method stub
 				return false;
 			}
 
 			@Override
 			public void dispose() {
-				// TODO Auto-generated method stub
 
 			}
 
 			@Override
 			public void addListener(ILabelProviderListener listener) {
-				// TODO Auto-generated method stub
-				@SuppressWarnings("unused")
-				int xst = 4;
 			}
 
 			@Override
 			public String getText(Object element) {
-				IType test = (IType) element;
-				return test.getFullyQualifiedName();
+				return ((IType) element).getFullyQualifiedName();
 			}
 
 			@Override
@@ -340,17 +271,8 @@ public class NewClassWizardPage extends NewSourceModulePage {
 		});
 
 		interfaceDialog.setRemoveButtonIndex(1);
-		
+
 		interfaceDialog.doFillIntoGrid(container, nColumns);
-	}
-
-	private void createSeparator() {
-		GridData gd;
-		gd = new GridData(GridData.FILL_HORIZONTAL, SWT.CENTER, true, true, 3, 3);
-		gd.heightHint = 20;
-
-		Label separator = new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
-		separator.setLayoutData(gd);
 	}
 
 	private void createClassModifierControls() {
@@ -449,7 +371,6 @@ public class NewClassWizardPage extends NewSourceModulePage {
 
 		superClassField = new StringButtonDialogField(new IStringButtonAdapter() {
 
-
 			@Override
 			public void changeControlPressed(DialogField field) {
 
@@ -460,9 +381,9 @@ public class NewClassWizardPage extends NewSourceModulePage {
 					return;
 
 				Object searchedObject[] = dialog.getResult();
-				superClass = (SourceType) searchedObject[0];
+				superClass = (IType) searchedObject[0];
 				((StringDialogField) field).setText(superClass.getFullyQualifiedName());
-				
+
 			}
 		});
 
@@ -525,6 +446,12 @@ public class NewClassWizardPage extends NewSourceModulePage {
 	}
 
 	@Override
+	protected String getFileName() {
+		return fileNameField.getText();
+		// return super.getFileName();
+	}
+
+	@Override
 	protected String getFileContent(ISourceModule module) throws CoreException {
 		ClassStubParameter classStubParameter = new ClassStubParameter();
 
@@ -534,8 +461,11 @@ public class NewClassWizardPage extends NewSourceModulePage {
 		classStubParameter.setNamespace(namespaceField.getText());
 		classStubParameter.setInterfaces(interfaceDialog.getElements());
 		classStubParameter.setSuperclass(superClass);
+		classStubParameter.setAbstractMethods(methodStubButtons.isSelected(1));
+		classStubParameter.setConstructor(methodStubButtons.isSelected(0));
+		classStubParameter.setComments(commentsButton.isSelected());
 
-		ClassStub classStub = new ClassStub(classStubParameter);
+		ClassStub classStub = new ClassStub(getScriptFolder().getScriptProject(), classStubParameter);
 		String content = classStub.toString();
 
 		IDocument doc = Formatter.createPHPDocument();

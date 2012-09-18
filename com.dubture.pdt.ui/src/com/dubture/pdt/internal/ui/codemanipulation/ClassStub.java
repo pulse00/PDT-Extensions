@@ -10,19 +10,11 @@
  ******************************************************************************/
 package com.dubture.pdt.internal.ui.codemanipulation;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import org.eclipse.core.resources.ProjectScope;
-import org.eclipse.core.runtime.preferences.DefaultScope;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.IScopeContext;
-import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.dltk.core.IScriptProject;
 import org.eclipse.dltk.core.IType;
-import org.eclipse.php.internal.core.PHPCoreConstants;
-import org.eclipse.php.internal.core.PHPCorePlugin;
+import org.eclipse.php.ui.CodeGeneration;
 
 /**
  * Utilities for class generation.
@@ -33,6 +25,7 @@ import org.eclipse.php.internal.core.PHPCorePlugin;
 public class ClassStub {
 
 	private String code = null;
+	private IScriptProject scriptProject = null;
 
 	private String name;
 	private String namespace;
@@ -40,60 +33,30 @@ public class ClassStub {
 	private boolean isFinal;
 	private boolean isAbstract;
 	private List<IType> interfaces;
+	private boolean generateComments;
+	private boolean generateConstructor;
+	private boolean generateInheritedMethods;
 
-	public ClassStub(ClassStubParameter parameters) {
+	public ClassStub(IScriptProject scriptProject, ClassStubParameter parameters) {
+		this.scriptProject = scriptProject;
+
 		name = parameters.getName();
 		superclass = parameters.getSuperclass();
 		namespace = parameters.getNamespace();
 		isFinal = parameters.isFinalClass();
 		isAbstract = parameters.isAbstractClass();
 		interfaces = parameters.getInterfaces();
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	// Is this useful?
-	private static Map setupOptions(IScriptProject project) {
-
-		Map options = new HashMap(PHPCorePlugin.getOptions());
-
-		IScopeContext[] contents = new IScopeContext[] { new ProjectScope(project.getProject()),
-				InstanceScope.INSTANCE, DefaultScope.INSTANCE };
-
-		for (int i = 0; i < contents.length; i++) {
-
-			IScopeContext scopeContext = contents[i];
-			IEclipsePreferences inode = scopeContext.getNode(PHPCorePlugin.ID);
-
-			if (inode != null) {
-
-				if (!options.containsKey(PHPCoreConstants.FORMATTER_USE_TABS)) {
-
-					String useTabs = inode.get(PHPCoreConstants.FORMATTER_USE_TABS, null);
-					if (useTabs != null) {
-						options.put(PHPCoreConstants.FORMATTER_USE_TABS, useTabs);
-					}
-				}
-
-				if (!options.containsKey(PHPCoreConstants.FORMATTER_INDENTATION_SIZE)) {
-
-					String size = inode.get(PHPCoreConstants.FORMATTER_INDENTATION_SIZE, null);
-
-					if (size != null) {
-						options.put(PHPCoreConstants.FORMATTER_INDENTATION_SIZE, size);
-					}
-				}
-			}
-		}
-
-		return options;
+		generateComments = parameters.isComments();
+		generateConstructor = parameters.isConstructor();
+		generateInheritedMethods = parameters.isAbstractMethods();
 	}
 
 	/**
 	 * Retrieve the code for a class stub.
 	 * 
-	 * @param parameterObject
+	 * @throws CoreException
 	 */
-	private void generateCode() {
+	private void generateCode() throws CoreException {
 
 		String lineDelim = "\n";
 
@@ -102,17 +65,8 @@ public class ClassStub {
 
 		buffer.append(generateNamespacePart());
 
-		// try {
-		// if (parameterObject.isComments()) {
-		// String typeComment =
-		// org.eclipse.php.ui.CodeGeneration.getTypeComment(parameterObject.getProject(),
-		// parameterObject.getName(), lineDelim);
-		// buffer.append(typeComment);
-		// buffer.append(lineDelim);
-		// }
-		// } catch (CoreException e1) {
-		// e1.printStackTrace();
-		// }
+		if (generateComments == true)
+			buffer.append(CodeGeneration.getTypeComment(scriptProject, name, lineDelim) + lineDelim);
 
 		if (isFinal == true) {
 			buffer.append("final ");
@@ -128,19 +82,17 @@ public class ClassStub {
 
 		buffer.append(generateInterfacesPart());
 
-		buffer.append("{}");
+		buffer.append("{" + lineDelim);
 
-		// if (method.isConstructor() && parameterObject.isConstructor()) {
-		// buffer.append(getMethodStub(parameterObject.getName(), method,
-		// indent, lineDelim,
-		// parameterObject.isComments()));
-		// }
-		// }
-		// } catch (ModelException e) {
-		// e.printStackTrace();
-		// }
-		// }
-		//
+		if(generateConstructor) {
+			//TODO: generate Constructor
+		}
+		
+		if(generateInheritedMethods) {
+			// TODO: generate abstract and interfaces' methods.
+		}
+		
+		buffer.append(lineDelim + "}");
 		code = buffer.toString();
 	}
 
@@ -183,11 +135,11 @@ public class ClassStub {
 		if (superclass != null && superclass.getParent() != null && getNamespace(superclass) != null) {
 			code += "use " + getNamespace(superclass) + ";\n";
 		}
-		
+
 		if (interfaces != null) {
 			for (IType interfaceObject : interfaces) {
 				if (interfaceObject.getParent() != null && getNamespace(interfaceObject) != null) {
-					code += "use " + getNamespace(superclass) + ";\n";
+					code += "use " + getNamespace(interfaceObject) + ";\n";
 				}
 			}
 		}
@@ -209,7 +161,11 @@ public class ClassStub {
 
 	public String toString() {
 		if (code == null) {
-			generateCode();
+			try {
+				generateCode();
+			} catch (CoreException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return code;
