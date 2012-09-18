@@ -172,6 +172,8 @@ public class NewClassWizardPage extends NewSourceModulePage {
 		DialogField.createEmptySpace(container);
 
 		methodStubButtons.setSelection(1, true);
+		
+		methodStubButtons.setEnabled(false);
 	}
 
 	private void createCommentsControls() {
@@ -260,7 +262,7 @@ public class NewClassWizardPage extends NewSourceModulePage {
 
 			@Override
 			public String getText(Object element) {
-				return ((IType) element).getFullyQualifiedName();
+				return ((IType) element).getFullyQualifiedName().replace("$", "\\");
 			}
 
 			@Override
@@ -382,7 +384,7 @@ public class NewClassWizardPage extends NewSourceModulePage {
 
 				Object searchedObject[] = dialog.getResult();
 				superClass = (IType) searchedObject[0];
-				((StringDialogField) field).setText(superClass.getFullyQualifiedName());
+				((StringDialogField) field).setText(superClass.getFullyQualifiedName().replace("$", "\\"));
 
 			}
 		});
