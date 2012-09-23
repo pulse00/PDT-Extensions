@@ -100,6 +100,7 @@ import com.dubture.pdt.formatter.internal.core.formatter.CodeFormatterConstants;
 import com.dubture.pdt.formatter.internal.core.formatter.CodeFormatterOptions;
 import com.dubture.pdt.formatter.internal.core.formatter.align.Alignment;
 
+@SuppressWarnings("restriction")
 public class ASTFormatter extends RunThroughVisitor {
 
 	private Program program;
@@ -155,6 +156,7 @@ public class ASTFormatter extends RunThroughVisitor {
 	/**
 	 * 
 	 */
+	@SuppressWarnings("rawtypes")
 	public ASTFormatter(Program program, TokenHolder holder,
 			CodeFormatterOptions options) {
 		this.program = program;
