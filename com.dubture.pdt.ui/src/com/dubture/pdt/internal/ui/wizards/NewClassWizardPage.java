@@ -30,16 +30,23 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.dltk.core.IScriptFolder;
 import org.eclipse.dltk.core.ISourceModule;
 import org.eclipse.dltk.core.IType;
+import org.eclipse.dltk.core.index2.search.ISearchEngine.MatchRule;
 import org.eclipse.dltk.core.search.IDLTKSearchConstants;
+import org.eclipse.dltk.core.search.IDLTKSearchScope;
+import org.eclipse.dltk.core.search.SearchEngine;
 
 import org.eclipse.dltk.ui.DLTKUIPlugin;
 import org.eclipse.dltk.ui.dialogs.StatusInfo;
 import org.eclipse.dltk.ui.wizards.NewSourceModulePage;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.fieldassist.AutoCompleteField;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.php.core.compiler.PHPFlags;
+import org.eclipse.php.internal.core.model.PhpModelAccess;
 import org.eclipse.php.internal.core.project.PHPNature;
 import org.eclipse.php.internal.ui.PHPUILanguageToolkit;
 import org.eclipse.php.internal.ui.PHPUIMessages;
@@ -81,12 +88,14 @@ public class NewClassWizardPage extends NewSourceModulePage {
 	private StringDialogField classNameField;
 	private StringDialogField fileNameField;
 	private StringButtonDialogField superClassField;
-	private IType superClass;
-	private StringDialogField namespaceField;
+	private IType namespace;
+	private StringButtonDialogField namespaceField;
 	private SelectionButtonDialogFieldGroup classModifierField;
 	private TreeListDialogField interfaceDialog;
 	private SelectionButtonDialogFieldGroup methodStubButtons;
 	private SelectionButtonDialogField commentsButton;
+	private AutoCompleteField acField;
+	private AutoCompleteField acField2;
 
 	public NewClassWizardPage(final ISelection selection, String initialFileName) {
 		super();
@@ -107,15 +116,16 @@ public class NewClassWizardPage extends NewSourceModulePage {
 	}
 
 	private OpenTypeSelectionDialog2 getDialog(int type, String title, String message, boolean multi) {
-		boolean getClasses;
-		boolean getInterfaces;
+		int falseFlags = 0;
+		int trueFlags = 0;
 
-		getClasses = type == NewClassWizardPage.CLASSES ? true : false;
-		getInterfaces = type == NewClassWizardPage.INTERFACES ? true : false;
+		falseFlags = (type == NewClassWizardPage.CLASSES ? PHPFlags.AccTrait | PHPFlags.AccInterface
+				| PHPFlags.AccNameSpace : 0);
+		trueFlags = (type == NewClassWizardPage.INTERFACES ? PHPFlags.AccInterface : 0);
 
 		OpenTypeSelectionDialog2 dialog = new OpenTypeSelectionDialog2(DLTKUIPlugin.getActiveWorkbenchShell(), multi,
-				PlatformUI.getWorkbench().getProgressService(), null, IDLTKSearchConstants.TYPE,
-				new PHPTypeSelectionExtension(getClasses, getInterfaces), PHPUILanguageToolkit.getInstance());
+				PlatformUI.getWorkbench().getProgressService(), null, IDLTKSearchConstants.UNKNOWN,
+				new PHPTypeSelectionExtension(trueFlags, falseFlags), PHPUILanguageToolkit.getInstance());
 
 		dialog.setTitle(title);
 		dialog.setMessage(message);
@@ -172,7 +182,7 @@ public class NewClassWizardPage extends NewSourceModulePage {
 		DialogField.createEmptySpace(container);
 
 		methodStubButtons.setSelection(1, true);
-		
+
 		methodStubButtons.setEnabled(false);
 	}
 
@@ -305,7 +315,7 @@ public class NewClassWizardPage extends NewSourceModulePage {
 	private void createFileNameControls() {
 
 		fileNameField = new StringDialogField();
-		fileNameField.setLabelText("Fil&ename:");
+		fileNameField.setLabelText("&Filename:");
 		fileNameField.doFillIntoGrid(container, nColumns - 1);
 		DialogField.createEmptySpace(container);
 
@@ -346,28 +356,52 @@ public class NewClassWizardPage extends NewSourceModulePage {
 	}
 
 	private void createNamespaceControls() {
-		namespaceField = new StringDialogField();
-		namespaceField.setLabelText("Na&mespace:");
-		namespaceField.doFillIntoGrid(container, nColumns - 1);
-		DialogField.createEmptySpace(container);
+		IStringButtonAdapter button = new IStringButtonAdapter() {
 
-		// TODO: Autocomplete namespaces?
-		// List<INamespaceResolver> resolvers =
-		// ExtensionManager.getDefault().getNamespaceResolvers();
-		//
-		// IScriptFolder folder = getScriptFolder();
-		//
-		// for (INamespaceResolver resolver : resolvers) {
-		// String ns = resolver.resolve(folder);
-		// if (ns != null && ns.length() > 0) {
-		// namespaceField.setText(ns);
-		// break;
-		// }
-		// }
+			@Override
+			public void changeControlPressed(DialogField field) {
+
+				OpenTypeSelectionDialog2 dialog = getDialog(NewClassWizardPage.CLASSES, "Namespace selection",
+						"Select namespace", false);
+				int result = dialog.open();
+				if (result != IDialogConstants.OK_ID)
+					return;
+
+				Object searchedObject[] = dialog.getResult();
+				namespace = (IType) searchedObject[0];
+				((StringDialogField) field).setText(namespace.getFullyQualifiedName());
+			}
+		};
+		
+		// TODO: We send empty button 'couse search dialog doesn't show namespaces. 
+		namespaceField = new StringButtonDialogField(null);
+		namespaceField.setLabelText("Na&mespace:");
+		namespaceField.setButtonLabel("Bro&wse...");
+		namespaceField.doFillIntoGrid(container, nColumns);
+
+		acField2 = new AutoCompleteField(namespaceField.getTextControl(), new TextContentAdapter(), null);
+
+		namespaceField.setDialogFieldListener(new IDialogFieldListener() {
+
+			@Override
+			public void dialogFieldChanged(DialogField field) {
+				List<String> props = new ArrayList<String>();
+				IDLTKSearchScope scope = SearchEngine.createSearchScope(getScriptFolder().getScriptProject());
+				IType[] types = PhpModelAccess.getDefault().findTypes(((StringDialogField) field).getText(),
+						MatchRule.PREFIX, PHPFlags.AccNameSpace, 0, scope, null);
+
+				for (IType type : types) {
+					props.add(type.getFullyQualifiedName());
+				}
+
+				acField2.setProposals((String[]) props.toArray(new String[props.size()]));
+			}
+		});
 	}
 
 	/**
-	 * TODO: Create autocomplete on field.
+	 * TODO: Create autocomplete on field. TODO: Add image decorator (small icon
+	 * next to label pointing that autocomplete is avaiable)
 	 */
 	private void createSuperClassControls() {
 
@@ -383,15 +417,35 @@ public class NewClassWizardPage extends NewSourceModulePage {
 					return;
 
 				Object searchedObject[] = dialog.getResult();
-				superClass = (IType) searchedObject[0];
-				((StringDialogField) field).setText(superClass.getFullyQualifiedName().replace("$", "\\"));
+				namespace = (IType) searchedObject[0];
+				((StringDialogField) field).setText(namespace.getFullyQualifiedName().replace("$", "\\"));
+			}
+		});
+
+		superClassField.setDialogFieldListener(new IDialogFieldListener() {
+
+			@Override
+			public void dialogFieldChanged(DialogField field) {
+
+				List<String> props = new ArrayList<String>();
+				IDLTKSearchScope scope = SearchEngine.createSearchScope(getScriptFolder().getScriptProject());
+				IType[] types = PhpModelAccess.getDefault().findTypes(((StringDialogField) field).getText(),
+						MatchRule.PREFIX, 0, PHPFlags.AccNameSpace | PHPFlags.AccInterface, scope, null);
+
+				for (IType type : types) {
+					props.add(type.getFullyQualifiedName());
+				}
+
+				acField.setProposals((String[]) props.toArray(new String[props.size()]));
 
 			}
 		});
 
 		superClassField.setLabelText("&Superclass:");
-		superClassField.setButtonLabel("Bro&wse...");
+		superClassField.setButtonLabel("Brows&e...");
 		superClassField.doFillIntoGrid(container, nColumns);
+
+		acField = new AutoCompleteField(superClassField.getTextControl(), new TextContentAdapter(), null);
 	}
 
 	private void createNameControls() {
@@ -462,7 +516,7 @@ public class NewClassWizardPage extends NewSourceModulePage {
 		classStubParameter.setFinalClass(classModifierField.isSelected(IS_FINAL_INDEX));
 		classStubParameter.setNamespace(namespaceField.getText());
 		classStubParameter.setInterfaces(interfaceDialog.getElements());
-		classStubParameter.setSuperclass(superClass);
+		classStubParameter.setSuperclass(namespace);
 		classStubParameter.setAbstractMethods(methodStubButtons.isSelected(1));
 		classStubParameter.setConstructor(methodStubButtons.isSelected(0));
 		classStubParameter.setComments(commentsButton.isSelected());

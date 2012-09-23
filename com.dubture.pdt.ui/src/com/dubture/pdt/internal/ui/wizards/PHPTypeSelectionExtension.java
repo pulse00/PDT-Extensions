@@ -15,32 +15,39 @@ import org.eclipse.php.core.compiler.PHPFlags;
 
 public class PHPTypeSelectionExtension extends TypeSelectionExtension {
 
-	// Filter, if false we don't get classes/interfaces in dialog.
-	// TODO: I don't like this solution, implement something else.
-	private boolean getClasses = true;
-	private boolean getInterfaces = true;
+	/**
+	 * @see PHPFlags
+	 */
+	private int trueFlags = 0;
+	private int falseFlags = 0;
 
 	public PHPTypeSelectionExtension() {
 	}
 
-	public PHPTypeSelectionExtension(boolean getClasses, boolean getInterfaces) {
-		this.getClasses = getClasses;
-		this.getInterfaces = getInterfaces;
+	public PHPTypeSelectionExtension(int trueFlags, int falseFlags) {
+		super();
+		this.trueFlags = trueFlags;
+		this.falseFlags = falseFlags;
 	}
 
 	@Override
 	public ITypeInfoFilterExtension getFilterExtension() {
-		// TODO Auto-generated method stub
 		return new ITypeInfoFilterExtension() {
 			@Override
 			public boolean select(ITypeInfoRequestor typeInfoRequestor) {
-				if (getInterfaces == true && PHPFlags.isInterface(typeInfoRequestor.getModifiers()))
+				if (falseFlags != 0 && (falseFlags & typeInfoRequestor.getModifiers()) != 0) {
+					
+					// Try to filter by black list.
+					return false;
+				} else if (trueFlags == 0 || (trueFlags & typeInfoRequestor.getModifiers()) != 0) {
+					
+					// Try to filter by white list, if trueFlags == 0 this is fine 'couse we pass black list.
 					return true;
-
-				if (getClasses == true && PHPFlags.isClass(typeInfoRequestor.getModifiers()))
-					return true;
-
-				return false;
+				} else {
+					
+					// Rest is filter out.
+					return false;
+				}
 			}
 		};
 	}
