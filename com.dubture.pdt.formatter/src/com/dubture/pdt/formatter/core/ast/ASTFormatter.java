@@ -79,6 +79,11 @@ import org.eclipse.php.internal.core.ast.nodes.StaticStatement;
 import org.eclipse.php.internal.core.ast.nodes.SwitchCase;
 import org.eclipse.php.internal.core.ast.nodes.SwitchStatement;
 import org.eclipse.php.internal.core.ast.nodes.ThrowStatement;
+import org.eclipse.php.internal.core.ast.nodes.TraitAlias;
+import org.eclipse.php.internal.core.ast.nodes.TraitAliasStatement;
+import org.eclipse.php.internal.core.ast.nodes.TraitDeclaration;
+import org.eclipse.php.internal.core.ast.nodes.TraitPrecedence;
+import org.eclipse.php.internal.core.ast.nodes.TraitPrecedenceStatement;
 import org.eclipse.php.internal.core.ast.nodes.TraitUseStatement;
 import org.eclipse.php.internal.core.ast.nodes.TryStatement;
 import org.eclipse.php.internal.core.ast.nodes.UnaryOperation;
@@ -101,6 +106,7 @@ import com.dubture.pdt.formatter.internal.core.formatter.CodeFormatterConstants;
 import com.dubture.pdt.formatter.internal.core.formatter.CodeFormatterOptions;
 import com.dubture.pdt.formatter.internal.core.formatter.align.Alignment;
 
+@SuppressWarnings("restriction")
 public class ASTFormatter extends RunThroughVisitor {
 
 	private Program program;
@@ -446,6 +452,8 @@ public class ASTFormatter extends RunThroughVisitor {
 				case PHP_PRIVATE:
 				case PHP_STATIC:
 				case PHP_USE:
+				case PHP_TRAIT:
+				case PHP_INSTEADOF:
 				case PHP_VAR:
 					text = text.trim() + " ";
 					break;
@@ -467,6 +475,7 @@ public class ASTFormatter extends RunThroughVisitor {
 					text = text.trim();
 				}
 
+				System.err.println("append " + text);
 				output.append(text);
 				if (insertNewLine > 0) {
 					while (insertNewLine-- > 0) {
@@ -521,8 +530,10 @@ public class ASTFormatter extends RunThroughVisitor {
 					}
 					text = "";
 					alignOpenTag = 0;
+				
 				}
 				output.appendRaw(text, false);
+				
 			}
 		}
 	}
@@ -768,8 +779,362 @@ public class ASTFormatter extends RunThroughVisitor {
 
 	@Override
 	public boolean visit(TraitUseStatement node) {
-		int offset = node.getStart();
-		walk(offset, node.getEnd()); // ""
+
+		/*
+		List<TraitStatement> tsList = node.getTsList();
+		
+		// TODO: implement TraitPrecedenceStatement 
+		// currently trait use statements can only be formatted without precedences
+		if (node.getTsList().size() > 0) {
+			node.childrenAccept(this);
+			return false;
+		}
+		*/
+		
+		walk(node.getStart(), node.getEnd());
+		return false;
+	}
+	
+	/*
+	@Override
+	public boolean visit(DereferenceNode node) {
+		// TODO Auto-generated method stub
+		System.err.println("dereference node");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(ChainingInstanceCall node) {
+		// TODO Auto-generated method stub
+		System.err.println("chaining instance call");
+		return false;
+	}
+	
+	@Override
+	public boolean visit(PHPArrayDereferenceList node) {
+		// TODO Auto-generated method stub
+		System.err.println("php array dereferenece list");
+		return false;
+	}
+	*/
+	
+	@Override
+	public boolean visit(TraitAlias node) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	@Override
+	public boolean visit(TraitAliasStatement node) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	@Override
+	public boolean visit(TraitPrecedence node) {
+		// TODO Auto-generated method stub
+		node.childrenAccept(this);
+		return false;
+	}
+	
+	@Override
+	public boolean visit(TraitPrecedenceStatement node) {
+		node.childrenAccept(this);
+		return false;
+	}
+	
+	/*
+	@Override
+	public boolean visit(FullyQualifiedTraitMethodReference node) {
+		// TODO Auto-generated method stub
+		
+		NamespaceName className = node.getClassName();
+		Identifier name = node.getFunctionName();
+
+		System.err.println(node.getStart());
+		walk(node.getStart(), className.getStart());
+		
+		className.accept(this);
+		
+		int offset = className.getEnd();
+		
+		walk(offset, name.getStart());
+		name.accept(this);
+		offset = name.getEnd();
+		
+		walk(offset, node.getEnd());
+		
+//		System.err.println(className);
+//		System.err.println("fqtmr");
+		
+		return false;
+	}
+	*/
+	protected void visitClassOrTrait(ClassDeclaration classDeclaration) {
+		
+		Identifier name = classDeclaration.getName();
+		Expression superClass = classDeclaration.getSuperClass();
+		List<Identifier> interfaces = classDeclaration.interfaces();
+		Block body = classDeclaration.getBody();
+
+		classDeclarationStack.push(new ClassDeclarationData());
+
+		BlockData blockData = new BlockData();
+		blockData.options_brace_position = options.brace_position_for_type_declaration;
+		blockData.options_insert_space_before_opening_brace = options.insert_space_before_opening_brace_in_type_declaration;
+		blockData.options_indent_body = options.indent_body_declarations_compare_to_type_header;
+		blockDataStack.push(blockData);
+
+		if (insert_blank_lines_before_class_stopper) {
+			insert_blank_lines_before_class_stopper = false;
+		} else {
+			if (options.blank_lines_before_first_class_body_declaration > 0) { // 代用
+				output.blankLines(options.blank_lines_before_first_class_body_declaration);
+			}
+		}
+		walk(classDeclaration.getStart(), name.getStart()); // "class"
+		name.accept(this);
+		int offset = name.getEnd();
+
+		if (superClass != null) {
+			int wrapStyle = getWrapStyle(options.alignment_for_superclass_in_type_declaration);
+			int indentStyle = getIndentStyle(options.alignment_for_superclass_in_type_declaration);
+			boolean forceSplit = isForceSplit(options.alignment_for_superclass_in_type_declaration);
+			boolean split = wrapStyle != Alignment.M_NO_ALIGNMENT;
+			int wrap = 0;
+			boolean spaceRequired = true;
+			boolean wrapped = false;
+
+			if (split && !forceSplit) {
+				int width = output.getPosition() + " extends ".length()
+						+ superClass.getLength();
+				split = width > options.page_width;
+			}
+
+			int end = superClass.getStart();
+			Token token = findToken(offset, end, TokenTypes.PHP_EXTENDS);
+			if (token != null) {
+				walk(offset, token.getStart());
+				offset = token.getStart();
+				if (split) {
+					wrap = (indentStyle == Alignment.M_INDENT_BY_ONE) ? 1
+							: options.continuation_indentation;
+					if (wrap > 0) {
+						output.wrap(wrap);
+					}
+					switch (wrapStyle) {
+					case Alignment.M_COMPACT_SPLIT:
+						int width = output.getPosition() + "extends ".length();
+						if (forceSplit || width > options.page_width) {
+							output.newLine();
+							spaceRequired = false;
+							wrapped = true;
+						}
+						break;
+					case Alignment.M_NEXT_PER_LINE_SPLIT:
+						// do not wrap here
+						break;
+					case Alignment.M_NEXT_SHIFTED_SPLIT:
+					case Alignment.M_ONE_PER_LINE_SPLIT:
+						output.newLine();
+						spaceRequired = false;
+						wrapped = true;
+						break;
+					}
+				}
+				output.spaceIf(spaceRequired);
+				if (split && indentStyle == Alignment.M_INDENT_ON_COLUMN) {
+					output.markPosition();
+				}
+				walk(offset, token.getEnd()); // "extends"
+				offset = token.getEnd();
+				spaceRequired = true;
+			} else {
+				FormatterPlugin.warning("extends", classDeclaration, offset,
+						end);
+			}
+			if (split) {
+				switch (wrapStyle) {
+				case Alignment.M_COMPACT_SPLIT:
+					int width = output.getPosition() + 1
+							+ superClass.getLength();
+					if (width > options.page_width) {
+						output.newLine();
+						spaceRequired = false;
+					}
+					break;
+				case Alignment.M_NEXT_SHIFTED_SPLIT:
+					if (wrapped) {
+						wrap++;
+						output.wrap(+1);
+					}
+					// non-break
+				case Alignment.M_ONE_PER_LINE_SPLIT:
+				case Alignment.M_NEXT_PER_LINE_SPLIT:
+					output.newLine();
+					spaceRequired = false;
+					break;
+				}
+			}
+			output.spaceIf(spaceRequired);
+			walk(offset, superClass.getStart());
+			superClass.accept(this);
+			offset = superClass.getEnd();
+			if (split) {
+				if (wrap > 0) {
+					output.wrap(-wrap);
+				}
+				output.markPosition(0);
+			}
+			spaceRequired = true;
+		}
+
+		if (!interfaces.isEmpty()) {
+			int wrapStyle = getWrapStyle(options.alignment_for_superinterfaces_in_type_declaration);
+			int indentStyle = getIndentStyle(options.alignment_for_superinterfaces_in_type_declaration);
+			boolean forceSplit = isForceSplit(options.alignment_for_superinterfaces_in_type_declaration);
+			boolean split = wrapStyle != Alignment.M_NO_ALIGNMENT;
+			int wrap = 0;
+			int wrapDelta = 1
+					+ boolDigit(options.insert_space_before_comma_in_superinterfaces)
+					+ boolDigit(options.insert_space_after_comma_in_superinterfaces);
+			boolean spaceRequired = true;
+			boolean wrapIndent = false;
+			boolean wrapped = false;
+
+			if (split && !forceSplit) {
+				int width = output.getPosition() + "implements ".length();
+				for (Identifier identifier : interfaces) {
+					width += identifier.getLength();
+				}
+				if (interfaces.size() > 1) {
+					width += (interfaces.size() - 1) * wrapDelta;
+				}
+				split = width > options.page_width;
+			}
+
+			int end = interfaces.get(0).getStart();
+			Token token = findToken(offset, end, TokenTypes.PHP_IMPLEMENTS);
+			if (token != null) {
+				walk(offset, token.getStart());
+				offset = token.getStart();
+				if (split) {
+					wrap = (indentStyle == Alignment.M_INDENT_BY_ONE) ? 1
+							: options.continuation_indentation;
+					if (wrap > 0) {
+						output.wrap(wrap);
+					}
+					switch (wrapStyle) {
+					case Alignment.M_COMPACT_SPLIT:
+						int width = output.getPosition()
+								+ "implements ".length();
+						if (forceSplit || width > options.page_width) {
+							output.newLine();
+							spaceRequired = false;
+							wrapped = true;
+						}
+						break;
+					case Alignment.M_NEXT_PER_LINE_SPLIT:
+						// do not wrap here
+						break;
+					case Alignment.M_NEXT_SHIFTED_SPLIT:
+					case Alignment.M_ONE_PER_LINE_SPLIT:
+						output.newLine();
+						spaceRequired = false;
+						wrapped = true;
+						break;
+					}
+				}
+				output.spaceIf(spaceRequired);
+				if (split && indentStyle == Alignment.M_INDENT_ON_COLUMN) {
+					output.markPosition();
+				}
+				walk(offset, token.getEnd()); // "implements"
+				offset = token.getEnd();
+				spaceRequired = true;
+			} else {
+				FormatterPlugin.warning("implements", classDeclaration, offset,
+						end);
+			}
+
+			for (Identifier identifier : interfaces) {
+				end = identifier.getStart();
+				token = findToken(offset, end, TokenTypes.PHP_TOKEN, ",");
+				if (token != null) {
+					walk(offset, token.getStart()); // ""
+					output.spaceIf(options.insert_space_before_comma_in_superinterfaces);
+					output.append(",");
+					spaceRequired = options.insert_space_after_comma_in_superinterfaces;
+					if (split) {
+						switch (wrapStyle) {
+						case Alignment.M_NEXT_SHIFTED_SPLIT:
+							if (!wrapIndent) {
+								wrap++;
+								output.wrap(+1);
+								wrapIndent = true;
+							}
+							break;
+						}
+					}
+					offset = token.getEnd();
+				} else {
+					// first [second to "implements"] element
+					if (split) {
+						switch (wrapStyle) {
+						case Alignment.M_NEXT_SHIFTED_SPLIT:
+							if (wrapped) {
+								wrap++;
+								output.wrap(+1);
+								wrapIndent = true;
+							}
+							break;
+						}
+					}
+				}
+				if (split) {
+					switch (wrapStyle) {
+					case Alignment.M_COMPACT_SPLIT:
+						int width = output.getPosition()
+								+ identifier.getLength() + wrapDelta;
+						if (width > options.page_width) {
+							output.newLine();
+							spaceRequired = false;
+						}
+						break;
+					case Alignment.M_NEXT_SHIFTED_SPLIT:
+					case Alignment.M_ONE_PER_LINE_SPLIT:
+					case Alignment.M_NEXT_PER_LINE_SPLIT:
+						output.newLine();
+						spaceRequired = false;
+						break;
+					}
+				}
+				output.spaceIf(spaceRequired);
+				walk(offset, identifier.getStart());
+				identifier.accept(this);
+				offset = identifier.getEnd();
+			}
+			if (split) {
+				if (wrap > 0) {
+					output.wrap(-wrap);
+				}
+				output.markPosition(0);
+			}
+		}
+
+		walk(offset, body.getStart()); // ""
+		body.accept(this);
+		walk(body.getEnd(), classDeclaration.getEnd()); // ""
+
+		classDeclarationStack.pop();
+		blockDataStack.pop();
+		
+		
+	}
+	
+	@Override
+	public boolean visit(TraitDeclaration classDeclaration) {
+		visitClassOrTrait(classDeclaration);
 		return false;
 	}
 	
@@ -1522,262 +1887,7 @@ public class ASTFormatter extends RunThroughVisitor {
 
 	@Override
 	public boolean visit(ClassDeclaration classDeclaration) {
-		Identifier name = classDeclaration.getName();
-		Expression superClass = classDeclaration.getSuperClass();
-		List<Identifier> interfaces = classDeclaration.interfaces();
-		Block body = classDeclaration.getBody();
-
-		classDeclarationStack.push(new ClassDeclarationData());
-
-		BlockData blockData = new BlockData();
-		blockData.options_brace_position = options.brace_position_for_type_declaration;
-		blockData.options_insert_space_before_opening_brace = options.insert_space_before_opening_brace_in_type_declaration;
-		blockData.options_indent_body = options.indent_body_declarations_compare_to_type_header;
-		blockDataStack.push(blockData);
-
-		if (insert_blank_lines_before_class_stopper) {
-			insert_blank_lines_before_class_stopper = false;
-		} else {
-			if (options.blank_lines_before_first_class_body_declaration > 0) { // 代用
-				output.blankLines(options.blank_lines_before_first_class_body_declaration);
-			}
-		}
-		walk(classDeclaration.getStart(), name.getStart()); // "class"
-		name.accept(this);
-		int offset = name.getEnd();
-
-		if (superClass != null) {
-			int wrapStyle = getWrapStyle(options.alignment_for_superclass_in_type_declaration);
-			int indentStyle = getIndentStyle(options.alignment_for_superclass_in_type_declaration);
-			boolean forceSplit = isForceSplit(options.alignment_for_superclass_in_type_declaration);
-			boolean split = wrapStyle != Alignment.M_NO_ALIGNMENT;
-			int wrap = 0;
-			boolean spaceRequired = true;
-			boolean wrapped = false;
-
-			if (split && !forceSplit) {
-				int width = output.getPosition() + " extends ".length()
-						+ superClass.getLength();
-				split = width > options.page_width;
-			}
-
-			int end = superClass.getStart();
-			Token token = findToken(offset, end, TokenTypes.PHP_EXTENDS);
-			if (token != null) {
-				walk(offset, token.getStart());
-				offset = token.getStart();
-				if (split) {
-					wrap = (indentStyle == Alignment.M_INDENT_BY_ONE) ? 1
-							: options.continuation_indentation;
-					if (wrap > 0) {
-						output.wrap(wrap);
-					}
-					switch (wrapStyle) {
-					case Alignment.M_COMPACT_SPLIT:
-						int width = output.getPosition() + "extends ".length();
-						if (forceSplit || width > options.page_width) {
-							output.newLine();
-							spaceRequired = false;
-							wrapped = true;
-						}
-						break;
-					case Alignment.M_NEXT_PER_LINE_SPLIT:
-						// do not wrap here
-						break;
-					case Alignment.M_NEXT_SHIFTED_SPLIT:
-					case Alignment.M_ONE_PER_LINE_SPLIT:
-						output.newLine();
-						spaceRequired = false;
-						wrapped = true;
-						break;
-					}
-				}
-				output.spaceIf(spaceRequired);
-				if (split && indentStyle == Alignment.M_INDENT_ON_COLUMN) {
-					output.markPosition();
-				}
-				walk(offset, token.getEnd()); // "extends"
-				offset = token.getEnd();
-				spaceRequired = true;
-			} else {
-				FormatterPlugin.warning("extends", classDeclaration, offset,
-						end);
-			}
-			if (split) {
-				switch (wrapStyle) {
-				case Alignment.M_COMPACT_SPLIT:
-					int width = output.getPosition() + 1
-							+ superClass.getLength();
-					if (width > options.page_width) {
-						output.newLine();
-						spaceRequired = false;
-					}
-					break;
-				case Alignment.M_NEXT_SHIFTED_SPLIT:
-					if (wrapped) {
-						wrap++;
-						output.wrap(+1);
-					}
-					// non-break
-				case Alignment.M_ONE_PER_LINE_SPLIT:
-				case Alignment.M_NEXT_PER_LINE_SPLIT:
-					output.newLine();
-					spaceRequired = false;
-					break;
-				}
-			}
-			output.spaceIf(spaceRequired);
-			walk(offset, superClass.getStart());
-			superClass.accept(this);
-			offset = superClass.getEnd();
-			if (split) {
-				if (wrap > 0) {
-					output.wrap(-wrap);
-				}
-				output.markPosition(0);
-			}
-			spaceRequired = true;
-		}
-
-		if (!interfaces.isEmpty()) {
-			int wrapStyle = getWrapStyle(options.alignment_for_superinterfaces_in_type_declaration);
-			int indentStyle = getIndentStyle(options.alignment_for_superinterfaces_in_type_declaration);
-			boolean forceSplit = isForceSplit(options.alignment_for_superinterfaces_in_type_declaration);
-			boolean split = wrapStyle != Alignment.M_NO_ALIGNMENT;
-			int wrap = 0;
-			int wrapDelta = 1
-					+ boolDigit(options.insert_space_before_comma_in_superinterfaces)
-					+ boolDigit(options.insert_space_after_comma_in_superinterfaces);
-			boolean spaceRequired = true;
-			boolean wrapIndent = false;
-			boolean wrapped = false;
-
-			if (split && !forceSplit) {
-				int width = output.getPosition() + "implements ".length();
-				for (Identifier identifier : interfaces) {
-					width += identifier.getLength();
-				}
-				if (interfaces.size() > 1) {
-					width += (interfaces.size() - 1) * wrapDelta;
-				}
-				split = width > options.page_width;
-			}
-
-			int end = interfaces.get(0).getStart();
-			Token token = findToken(offset, end, TokenTypes.PHP_IMPLEMENTS);
-			if (token != null) {
-				walk(offset, token.getStart());
-				offset = token.getStart();
-				if (split) {
-					wrap = (indentStyle == Alignment.M_INDENT_BY_ONE) ? 1
-							: options.continuation_indentation;
-					if (wrap > 0) {
-						output.wrap(wrap);
-					}
-					switch (wrapStyle) {
-					case Alignment.M_COMPACT_SPLIT:
-						int width = output.getPosition()
-								+ "implements ".length();
-						if (forceSplit || width > options.page_width) {
-							output.newLine();
-							spaceRequired = false;
-							wrapped = true;
-						}
-						break;
-					case Alignment.M_NEXT_PER_LINE_SPLIT:
-						// do not wrap here
-						break;
-					case Alignment.M_NEXT_SHIFTED_SPLIT:
-					case Alignment.M_ONE_PER_LINE_SPLIT:
-						output.newLine();
-						spaceRequired = false;
-						wrapped = true;
-						break;
-					}
-				}
-				output.spaceIf(spaceRequired);
-				if (split && indentStyle == Alignment.M_INDENT_ON_COLUMN) {
-					output.markPosition();
-				}
-				walk(offset, token.getEnd()); // "implements"
-				offset = token.getEnd();
-				spaceRequired = true;
-			} else {
-				FormatterPlugin.warning("implements", classDeclaration, offset,
-						end);
-			}
-
-			for (Identifier identifier : interfaces) {
-				end = identifier.getStart();
-				token = findToken(offset, end, TokenTypes.PHP_TOKEN, ",");
-				if (token != null) {
-					walk(offset, token.getStart()); // ""
-					output.spaceIf(options.insert_space_before_comma_in_superinterfaces);
-					output.append(",");
-					spaceRequired = options.insert_space_after_comma_in_superinterfaces;
-					if (split) {
-						switch (wrapStyle) {
-						case Alignment.M_NEXT_SHIFTED_SPLIT:
-							if (!wrapIndent) {
-								wrap++;
-								output.wrap(+1);
-								wrapIndent = true;
-							}
-							break;
-						}
-					}
-					offset = token.getEnd();
-				} else {
-					// first [second to "implements"] element
-					if (split) {
-						switch (wrapStyle) {
-						case Alignment.M_NEXT_SHIFTED_SPLIT:
-							if (wrapped) {
-								wrap++;
-								output.wrap(+1);
-								wrapIndent = true;
-							}
-							break;
-						}
-					}
-				}
-				if (split) {
-					switch (wrapStyle) {
-					case Alignment.M_COMPACT_SPLIT:
-						int width = output.getPosition()
-								+ identifier.getLength() + wrapDelta;
-						if (width > options.page_width) {
-							output.newLine();
-							spaceRequired = false;
-						}
-						break;
-					case Alignment.M_NEXT_SHIFTED_SPLIT:
-					case Alignment.M_ONE_PER_LINE_SPLIT:
-					case Alignment.M_NEXT_PER_LINE_SPLIT:
-						output.newLine();
-						spaceRequired = false;
-						break;
-					}
-				}
-				output.spaceIf(spaceRequired);
-				walk(offset, identifier.getStart());
-				identifier.accept(this);
-				offset = identifier.getEnd();
-			}
-			if (split) {
-				if (wrap > 0) {
-					output.wrap(-wrap);
-				}
-				output.markPosition(0);
-			}
-		}
-
-		walk(offset, body.getStart()); // ""
-		body.accept(this);
-		walk(body.getEnd(), classDeclaration.getEnd()); // ""
-
-		classDeclarationStack.pop();
-		blockDataStack.pop();
+		visitClassOrTrait(classDeclaration);
 		return false;
 	}
 
@@ -4790,6 +4900,8 @@ public class ASTFormatter extends RunThroughVisitor {
 
 	@Override
 	public boolean visit(UseStatement useStatement) {
+		
+		System.err.println("use");
 		List<UseStatementPart> parts = useStatement.parts();
 
 		int offset = useStatement.getStart();
@@ -4816,6 +4928,7 @@ public class ASTFormatter extends RunThroughVisitor {
 
 	@Override
 	public boolean visit(UseStatementPart useStatementPart) {
+		
 		NamespaceName name = useStatementPart.getName();
 		Identifier alias = useStatementPart.getAlias();
 

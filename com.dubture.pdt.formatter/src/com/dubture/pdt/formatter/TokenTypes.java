@@ -4,6 +4,9 @@ import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes
 
 public enum TokenTypes {
 
+	
+	PHP_INSTEADOF(PHPRegionTypes.PHP_INSTEADOF), //
+	PHP_TRAIT(PHPRegionTypes.PHP_TRAIT), //
 	PHP_KEYWORD(PHPRegionTypes.PHP_KEYWORD), //
 	PHP_OPENTAG(PHPRegionTypes.PHP_OPENTAG), //
 	PHP_CLOSETAG(PHPRegionTypes.PHP_CLOSETAG), //
