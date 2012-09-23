@@ -1155,6 +1155,11 @@ public class ASTFormatter extends RunThroughVisitor {
 				break;
 			case ASTNode.NAMESPACE: // NamespaceDeclaration
 				output.newLine();
+				
+				if (options.insert_new_line_after_namespace_declaration) {
+					output.newLine(true);
+				}
+				
 				visit(block.statements(), block.getStart(), block.getEnd());
 				break;
 			default:

@@ -313,6 +313,7 @@ public class CodeFormatterOptions {
 		return Integer.toString(alignment);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Map getMap() {
 		Map options = new HashMap();
 		options.put(

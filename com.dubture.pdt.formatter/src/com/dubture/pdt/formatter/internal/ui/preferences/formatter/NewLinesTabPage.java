@@ -27,6 +27,9 @@ import com.dubture.pdt.formatter.internal.core.formatter.CodeFormatterConstants;
 public class NewLinesTabPage extends FormatterTabPage {
 
 	private final String PREVIEW = createPreviewHeader(FormatterMessages.NewLinesTabPage_preview_header)
+			+ "namespace Acme\\Demo;\n"
+			+ "use Acme\\Foobar\\SomeClass;\n"
+			+ "use Acme\\Foobar\\SomeOtherClass;\n"
 			+ "class EmptyClass {}\n"
 			+ "class Example {"
 			+ "  var $fArray= array(1, 2, 3, 4, 5 );"
