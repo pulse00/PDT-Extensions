@@ -1,3 +1,8 @@
+1.0.13
+
+* added newline for namespaces in formatter
+* added trait support for formatter
+
 1.0.12
 
 * added possibility to initialize classwizard with default values 
