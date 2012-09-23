@@ -475,7 +475,6 @@ public class ASTFormatter extends RunThroughVisitor {
 					text = text.trim();
 				}
 
-				System.err.println("append " + text);
 				output.append(text);
 				if (insertNewLine > 0) {
 					while (insertNewLine-- > 0) {
@@ -799,7 +798,6 @@ public class ASTFormatter extends RunThroughVisitor {
 	@Override
 	public boolean visit(DereferenceNode node) {
 		// TODO Auto-generated method stub
-		System.err.println("dereference node");
 		return false;
 	}
 	
@@ -4901,7 +4899,6 @@ public class ASTFormatter extends RunThroughVisitor {
 	@Override
 	public boolean visit(UseStatement useStatement) {
 		
-		System.err.println("use");
 		List<UseStatementPart> parts = useStatement.parts();
 
 		int offset = useStatement.getStart();
