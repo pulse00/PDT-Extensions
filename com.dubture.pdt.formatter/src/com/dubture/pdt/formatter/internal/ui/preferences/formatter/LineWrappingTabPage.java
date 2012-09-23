@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.dltk.internal.ui.util.SWTUtil;
@@ -53,7 +52,7 @@ import com.dubture.pdt.formatter.internal.core.formatter.CodeFormatterConstants;
 /**
  * The line wrapping tab page.
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({ "unused", "restriction" })
 public class LineWrappingTabPage extends FormatterTabPage {
 	/**
 	 * Represents a line wrapping category. All members are final.

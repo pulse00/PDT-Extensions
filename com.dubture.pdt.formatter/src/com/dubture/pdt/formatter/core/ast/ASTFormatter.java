@@ -162,6 +162,7 @@ public class ASTFormatter extends RunThroughVisitor {
 	/**
 	 * 
 	 */
+	@SuppressWarnings("rawtypes")
 	public ASTFormatter(Program program, TokenHolder holder,
 			CodeFormatterOptions options) {
 		this.program = program;
@@ -1527,6 +1528,11 @@ public class ASTFormatter extends RunThroughVisitor {
 				break;
 			case ASTNode.NAMESPACE: // NamespaceDeclaration
 				output.newLine();
+				
+				if (options.insert_new_line_after_namespace_declaration) {
+					output.newLine(true);
+				}
+				
 				visit(block.statements(), block.getStart(), block.getEnd());
 				break;
 			default:

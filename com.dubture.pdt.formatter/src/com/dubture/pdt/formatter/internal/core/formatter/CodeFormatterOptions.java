@@ -119,6 +119,7 @@ public class CodeFormatterOptions {
 	public boolean insert_new_line_in_empty_block;
 	public boolean insert_new_line_in_empty_method_body;
 	public boolean insert_new_line_in_empty_type_declaration;
+	public boolean insert_new_line_after_namespace_declaration;
 	public boolean insert_space_after_and_in_type_parameter;
 	public boolean insert_space_after_assignment_operator;
 	public boolean insert_space_after_binary_operator;
@@ -312,6 +313,7 @@ public class CodeFormatterOptions {
 		return Integer.toString(alignment);
 	}
 
+	@SuppressWarnings("unchecked")
 	public Map getMap() {
 		Map options = new HashMap();
 		options.put(
@@ -559,6 +561,10 @@ public class CodeFormatterOptions {
 		options.put(
 				CodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_IN_EMPTY_TYPE_DECLARATION,
 				this.insert_new_line_in_empty_type_declaration ? CodeFormatterConstants.INSERT
+						: CodeFormatterConstants.DO_NOT_INSERT);
+		options.put(
+				CodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AFTER_NAMESPACE_DECLARATION,
+				this.insert_new_line_after_namespace_declaration ? CodeFormatterConstants.INSERT
 						: CodeFormatterConstants.DO_NOT_INSERT);
 		options.put(
 				CodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AFTER_LABEL,
@@ -1931,6 +1937,14 @@ public class CodeFormatterOptions {
 			this.insert_new_line_in_empty_type_declaration = CodeFormatterConstants.INSERT
 					.equals(insertNewLineInEmptyTypeDeclarationOption);
 		}
+		
+		final Object insertNewLineAfterNamespacedeclarationOption = settings
+				.get(CodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AFTER_NAMESPACE_DECLARATION);
+		if (insertNewLineInEmptyTypeDeclarationOption != null) {
+			this.insert_new_line_after_namespace_declaration = CodeFormatterConstants.INSERT
+					.equals(insertNewLineAfterNamespacedeclarationOption);
+		}
+		
 		final Object insertNewLineAfterLabelOption = settings
 				.get(CodeFormatterConstants.FORMATTER_INSERT_NEW_LINE_AFTER_LABEL);
 		if (insertNewLineAfterLabelOption != null) {
@@ -3112,6 +3126,7 @@ public class CodeFormatterOptions {
 		this.insert_new_line_in_empty_block = true;
 		this.insert_new_line_in_empty_method_body = true;
 		this.insert_new_line_in_empty_type_declaration = true;
+		this.insert_new_line_after_namespace_declaration= true;
 		this.insert_space_after_and_in_type_parameter = true;
 		this.insert_space_after_assignment_operator = true;
 		this.insert_space_after_binary_operator = true;

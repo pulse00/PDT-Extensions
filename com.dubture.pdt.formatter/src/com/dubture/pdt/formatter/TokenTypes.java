@@ -2,6 +2,7 @@ package com.dubture.pdt.formatter;
 
 import org.eclipse.php.internal.core.documentModel.parser.regions.PHPRegionTypes;
 
+@SuppressWarnings("restriction")
 public enum TokenTypes {
 
 	
