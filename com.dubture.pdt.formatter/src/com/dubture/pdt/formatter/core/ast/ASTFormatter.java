@@ -79,6 +79,7 @@ import org.eclipse.php.internal.core.ast.nodes.StaticStatement;
 import org.eclipse.php.internal.core.ast.nodes.SwitchCase;
 import org.eclipse.php.internal.core.ast.nodes.SwitchStatement;
 import org.eclipse.php.internal.core.ast.nodes.ThrowStatement;
+import org.eclipse.php.internal.core.ast.nodes.TraitUseStatement;
 import org.eclipse.php.internal.core.ast.nodes.TryStatement;
 import org.eclipse.php.internal.core.ast.nodes.UnaryOperation;
 import org.eclipse.php.internal.core.ast.nodes.UseStatement;
@@ -563,6 +564,7 @@ public class ASTFormatter extends RunThroughVisitor {
 			case ASTNode.COMMENT:
 			case ASTNode.NAMESPACE:
 			case ASTNode.SWITCH_CASE:
+			case ASTNode.TRAIT_USE_STATEMENT:
 				break;
 			case ASTNode.GOTO_LABEL:
 			case ASTNode.IN_LINE_HTML:
@@ -764,6 +766,13 @@ public class ASTFormatter extends RunThroughVisitor {
 		return bool ? 1 : 0;
 	}
 
+	@Override
+	public boolean visit(TraitUseStatement node) {
+		int offset = node.getStart();
+		walk(offset, node.getEnd()); // ""
+		return false;
+	}
+	
 	@Override
 	public boolean visit(ArrayAccess arrayAccess) {
 		VariableBase name = arrayAccess.getName();
