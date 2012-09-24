@@ -1800,9 +1800,9 @@ public class CodeFormatterOptions {
 		//				this.comment_line_length = Integer
 		//						.parseInt((String) commentLineLengthOption);
 		//			} catch (NumberFormatException e) {
-		//				this.comment_line_length = 80;
+		//				this.comment_line_length = 300;
 		//			} catch (ClassCastException e) {
-		//				this.comment_line_length = 80;
+		//				this.comment_line_length = 300;
 		//			}
 		//		}
 		//		final Object commentNewLinesAtBlockBoundariesOption = settings
@@ -2850,9 +2850,9 @@ public class CodeFormatterOptions {
 			try {
 				this.page_width = Integer.parseInt((String) pageWidthOption);
 			} catch (NumberFormatException e) {
-				this.page_width = 80;
+				this.page_width = 300;
 			} catch (ClassCastException e) {
-				this.page_width = 80;
+				this.page_width = 300;
 			}
 		}
 		final Object useTabOption = settings
@@ -3092,7 +3092,7 @@ public class CodeFormatterOptions {
 		//		this.comment_insert_new_line_for_parameter = true;
 		//		this.comment_new_lines_at_block_boundaries = true;
 		//		this.comment_new_lines_at_javadoc_boundaries = true;
-		//		this.comment_line_length = 80;
+		//		this.comment_line_length = 300;
 		this.continuation_indentation = 2;
 		this.continuation_indentation_for_array_initializer = 2;
 		this.blank_lines_after_imports = 1;
@@ -3273,7 +3273,7 @@ public class CodeFormatterOptions {
 		this.join_wrapped_lines = true;
 		this.put_empty_statement_on_new_line = true;
 		//		this.tab_size = 8;
-		this.page_width = 80;
+		this.page_width = 300;
 		//		this.tab_char = MIXED;
 		this.use_tabs_only_for_leading_indentations = false;
 		this.wrap_before_binary_operator = true;

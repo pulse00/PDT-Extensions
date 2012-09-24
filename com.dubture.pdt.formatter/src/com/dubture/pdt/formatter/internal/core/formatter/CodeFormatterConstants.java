@@ -1050,7 +1050,7 @@ public class CodeFormatterConstants {
 	 * FORMATTER / Option to specify the line length for comments.
 	 *     - option id:         "org.eclipse.jdt.core.formatter.comment.line_length"
 	 *     - possible values:   "&lt;n&gt;", where n is zero or a positive integer
-	 *     - default:           "80"
+	 *     - default:           "300"
 	 * </pre>
 	 * @since 3.1
 	 */
@@ -3549,7 +3549,7 @@ public class CodeFormatterConstants {
 	 * FORMATTER / Option to specify the length of the page. Beyond this length, the formatter will try to split the code
 	 *     - option id:         "org.eclipse.jdt.core.formatter.lineSplit"
 	 *     - possible values:   "&lt;n&gt;", where n is zero or a positive integer
-	 *     - default:           "80"
+	 *     - default:           "300"
 	 * </pre>
 	 * @since 3.0
 	 */
