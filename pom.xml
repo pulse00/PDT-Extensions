@@ -22,7 +22,7 @@
    <repository>
      <id>indigo</id>
      <layout>p2</layout>
-     <url>http://download.eclipse.org/releases/indigo</url>
+     <url>http://download.eclipse.org/releases/juno</url>
    </repository>	
 
    <repository>
