@@ -6,7 +6,7 @@ Bundle-Version: 1.0.13
 Bundle-Activator: com.dubture.pdt.core.PDTCorePlugin
 Bundle-Vendor: https://github.com/pulse00
 Require-Bundle: org.eclipse.core.runtime,
- org.eclipse.php.core,
+ org.eclipse.php.core;bundle-version="3.1.1",
  org.eclipse.dltk.core,
  org.eclipse.jface.text,
  org.eclipse.core.resources
