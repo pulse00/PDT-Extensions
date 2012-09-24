@@ -3,6 +3,16 @@
 <plugin>
    <extension-point id="profileContributor" name="Formatter Profile Contributor" schema="schema/profileContributor.exsd"/>
 
+
+   <extension
+         point="org.eclipse.php.ui.phpFormatterPrefBlock">
+      <block
+            class="com.dubture.pdt.formatter.internal.ui.preferences.PDTFormatterConfigurationBlockWrapper"
+            id="com.dubture.pde.formatter.codeFormatterBlock"
+            name="PDT Extensions Code Formatter">
+      </block>
+   </extension>
+   
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
@@ -10,39 +20,6 @@
             class="com.dubture.pdt.formatter.internal.ui.preferences.IndentGuidePreferencePage"
             id="jp.sourceforge.pdt_tools.indentguide.preferences.PreferencePage"
             name="%indentpage.name">
-      </page>
-   </extension>
-
-   <extension
-         point="org.eclipse.php.ui.phpFormatterPrefBlock">
-      <block
-            class="com.dubture.pdt.formatter.internal.ui.preferences.PDTFormatterConfigurationBlockWrapper"
-            id="com.dubture.pde.formatter.block1"
-            name="com.dubture.pde.formatter.block1">
-      </block>
-   </extension>
-   
-   <extension
-         point="org.eclipse.ui.preferencePages">
-      <page
-            category="org.eclipse.php.ui.preferences.CodeStylePreferencePage"
-            class="com.dubture.pdt.formatter.internal.ui.preferences.CodeFormatterPreferencePage"
-            id="jp.sourceforge.pdt_tools.formatter.ui.preferences.CodeFormatterPreferencePage"
-            name="%page.name">
-      </page>
-   </extension>
-   <extension
-         point="org.eclipse.ui.propertyPages">
-      <page
-            category="org.eclipse.php.ui.propertyPages.CodeStylePreferencePage"
-            class="com.dubture.pdt.formatter.internal.ui.preferences.CodeFormatterPreferencePage"
-            id="jp.sourceforge.pdt_tools.formatter.ui.propertyPages.CodeFormatterPropertyPage"
-            name="%page.name.0">
-         <enabledWhen>
-            <adapt
-                  type="org.eclipse.dltk.core.IScriptProject">
-            </adapt>
-         </enabledWhen>
       </page>
    </extension>
    

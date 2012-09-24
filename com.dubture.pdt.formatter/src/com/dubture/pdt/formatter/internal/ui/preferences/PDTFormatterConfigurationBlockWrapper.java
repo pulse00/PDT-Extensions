@@ -6,17 +6,31 @@ import org.eclipse.php.ui.preferences.IPHPFormatterConfigurationBlockWrapper;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.preferences.IWorkbenchPreferenceContainer;
+import org.eclipse.ui.preferences.IWorkingCopyManager;
+import org.eclipse.ui.preferences.WorkingCopyManager;
+
+import com.dubture.pdt.formatter.internal.ui.preferences.formatter.CodeFormatterConfigurationBlock;
 
 @SuppressWarnings("restriction")
 public class PDTFormatterConfigurationBlockWrapper implements
 	IPHPFormatterConfigurationBlockWrapper {
 	
-	private PDEFormatterConfigurationBlock pConfigurationBlock;
+	private CodeFormatterConfigurationBlock pConfigurationBlock;
 
 	public void init(IStatusChangeListener context, IProject project,
 			IWorkbenchPreferenceContainer container) {
-		pConfigurationBlock = new PDEFormatterConfigurationBlock(context,
-				project, container);
+
+		IWorkingCopyManager workingCopyManager;
+		if (container instanceof IWorkbenchPreferenceContainer) {
+			workingCopyManager = ((IWorkbenchPreferenceContainer) container)
+					.getWorkingCopyManager();
+		} else {
+			workingCopyManager = new WorkingCopyManager(); // non shared
+		}
+		PreferencesAccess access = PreferencesAccess
+				.getWorkingCopyPreferences(workingCopyManager);
+		
+		pConfigurationBlock = new CodeFormatterConfigurationBlock(project, access);
 	}
 
 	public Control createContents(Composite composite) {
@@ -45,7 +59,7 @@ public class PDTFormatterConfigurationBlockWrapper implements
 
 	public void useProjectSpecificSettings(boolean useProjectSpecificSettings) {
 		pConfigurationBlock
-				.useProjectSpecificSettings(useProjectSpecificSettings);
+				.enableProjectSpecificSettings(useProjectSpecificSettings);
 	}
 
 	public String getDescription() {
