@@ -1,4 +1,4 @@
-package com.dubture.pdt.internal.ui.wizards;
+package com.dubture.pdt.internal.ui.util;
 
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
@@ -13,5 +13,6 @@ public class PHPContentProposalAdapter extends ContentProposalAdapter {
 		super(control, controlContentAdapter, proposalProvider, keyStroke, autoActivationCharacters);
 		// TODO Auto-generated constructor stub
 	}
+	
 
 }

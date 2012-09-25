@@ -20,6 +20,45 @@ import com.dubture.pdt.core.util.PDTModelUtils;
 
 public class MethodStub {
 
+	private String lineDelim = "\n";
+
+	private String code = "";
+	private boolean generateComments;
+	private IMethod method;
+
+	public MethodStub(IMethod method, boolean generateComments) {
+		this.method = method;
+		this.generateComments = generateComments;
+	}
+
+	private void generateCode() throws ModelException {
+
+		String access = null;
+		if (PHPFlags.isPublic(method.getFlags())) {
+			access = "public ";
+		} else if (PHPFlags.isProtected(method.getFlags())) {
+			access = "protected ";
+		}
+		
+		code = lineDelim + lineDelim + access + "function " + method.getElementName() + "() { " + lineDelim
+				+ "// TODO Auto-generated method stub " + lineDelim + "}" + lineDelim + lineDelim;
+	}
+
+	public String toString() {
+		try {
+			generateCode();
+		} catch (ModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return code;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
+
 	/**
 	 * 
 	 * Retrieve the code stub for a given {@link IMethod}

@@ -23,7 +23,7 @@ public class ClassStubParameter {
 	private IType superclass;
 	private List<IType> interfaces;
 	private boolean constructor;
-	private boolean abstractMethods;
+	private boolean inheritedMethods;
 	private boolean comments;
 
 	public IScriptProject getProject() {
@@ -82,12 +82,12 @@ public class ClassStubParameter {
 		this.constructor = constructor;
 	}
 
-	public boolean isAbstractMethods() {
-		return abstractMethods;
+	public boolean createInheritedMethods() {
+		return inheritedMethods;
 	}
 
-	public void setAbstractMethods(boolean abstractMethods) {
-		this.abstractMethods = abstractMethods;
+	public void setInheritedMethods(boolean inheritedMethods) {
+		this.inheritedMethods = inheritedMethods;
 	}
 
 	public boolean isComments() {
@@ -97,7 +97,6 @@ public class ClassStubParameter {
 	public void setComments(boolean comments) {
 		this.comments = comments;
 	}
-	
 
 	public boolean isAbstractClass() {
 		return abstractClass;

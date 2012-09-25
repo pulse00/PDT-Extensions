@@ -6,12 +6,17 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  ******************************************************************************/
-package com.dubture.pdt.internal.ui.wizards;
+package com.dubture.pdt.internal.ui.util;
 
+import org.eclipse.dltk.core.INamespace;
+import org.eclipse.dltk.core.IType;
+import org.eclipse.dltk.internal.ui.wizards.TypedElementSelectionValidator;
 import org.eclipse.dltk.ui.dialogs.ITypeInfoFilterExtension;
+import org.eclipse.dltk.ui.dialogs.ITypeInfoImageProvider;
 import org.eclipse.dltk.ui.dialogs.ITypeInfoRequestor;
 import org.eclipse.dltk.ui.dialogs.TypeSelectionExtension;
 import org.eclipse.php.core.compiler.PHPFlags;
+import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 
 public class PHPTypeSelectionExtension extends TypeSelectionExtension {
 
@@ -51,4 +56,11 @@ public class PHPTypeSelectionExtension extends TypeSelectionExtension {
 			}
 		};
 	}
+
+	@SuppressWarnings("restriction")
+	@Override
+	public ISelectionStatusValidator getSelectionValidator() {
+		return new TypedElementSelectionValidator(new Class[] {IType.class, INamespace.class}, false);
+	}
+	
 }

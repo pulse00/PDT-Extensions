@@ -12,8 +12,12 @@ package com.dubture.pdt.internal.ui.codemanipulation;
 
 import java.util.List;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.dltk.core.IMethod;
 import org.eclipse.dltk.core.IScriptProject;
 import org.eclipse.dltk.core.IType;
+import org.eclipse.dltk.core.ModelException;
+import org.eclipse.dltk.internal.core.SourceType;
+import org.eclipse.php.core.compiler.PHPFlags;
 import org.eclipse.php.ui.CodeGeneration;
 
 /**
@@ -26,6 +30,8 @@ public class ClassStub {
 
 	private String code = null;
 	private IScriptProject scriptProject = null;
+
+	private String lineDelim = "\n";
 
 	private String name;
 	private String namespace;
@@ -48,7 +54,7 @@ public class ClassStub {
 		interfaces = parameters.getInterfaces();
 		generateComments = parameters.isComments();
 		generateConstructor = parameters.isConstructor();
-		generateInheritedMethods = parameters.isAbstractMethods();
+		generateInheritedMethods = parameters.createInheritedMethods();
 	}
 
 	/**
@@ -57,8 +63,6 @@ public class ClassStub {
 	 * @throws CoreException
 	 */
 	private void generateCode() throws CoreException {
-
-		String lineDelim = "\n";
 
 		StringBuilder buffer = new StringBuilder("<?php");
 		buffer.append(lineDelim);
@@ -80,18 +84,16 @@ public class ClassStub {
 
 		buffer.append(generateSuperclassPart());
 
-		buffer.append(generateInterfacesPart());
+		buffer.append(generateInterfacesCode());
 
 		buffer.append("{" + lineDelim);
 
-		if(generateConstructor) {
-			//TODO: generate Constructor
+		if (generateConstructor) {
+			// TODO: generate Constructor
 		}
-		
-		if(generateInheritedMethods) {
-			// TODO: generate abstract and interfaces' methods.
-		}
-		
+
+		buffer.append(generateMethods());
+
 		buffer.append(lineDelim + "}");
 		code = buffer.toString();
 	}
@@ -105,7 +107,7 @@ public class ClassStub {
 		return "";
 	}
 
-	private String generateInterfacesPart() {
+	private String generateInterfacesCode() {
 
 		String code = new String();
 		if (!interfaces.isEmpty()) {
@@ -127,18 +129,21 @@ public class ClassStub {
 	}
 
 	private String generateNamespacePart() {
+		// TODO: Create list of namespaces to avoid duplication;
 		String code = new String();
 		if (namespace != null && namespace.length() > 0) {
 			code = "namespace " + namespace + ";\n\n";
 		}
 
-		if (superclass != null && superclass.getParent() != null && getNamespace(superclass) != null) {
+		if (superclass != null && superclass.getParent() != null && getNamespace(superclass) != null
+				&& !getNamespace(superclass).equals(namespace)) {
 			code += "use " + getNamespace(superclass) + ";\n";
 		}
 
 		if (interfaces != null) {
 			for (IType interfaceObject : interfaces) {
-				if (interfaceObject.getParent() != null && getNamespace(interfaceObject) != null) {
+				if (interfaceObject.getParent() != null && getNamespace(interfaceObject) != null
+						&& getNamespace(interfaceObject).equals(namespace)) {
 					code += "use " + getNamespace(interfaceObject) + ";\n";
 				}
 			}
@@ -157,6 +162,23 @@ public class ClassStub {
 		}
 
 		return null;
+	}
+
+	private String generateMethods() {
+		String code = "";
+		if (generateInheritedMethods == true) {
+			try {
+				for (IMethod method : ((SourceType) superclass).getMethods()) {
+					if (PHPFlags.isAbstract(method.getFlags())) {
+						code += new MethodStub(method, generateComments).toString();
+					}
+				}
+			} catch (ModelException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return code;
 	}
 
 	public String toString() {
