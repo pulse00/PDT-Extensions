@@ -28,9 +28,10 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import com.dubture.pdt.core.compiler.MissingMethodImplementation;
 import com.dubture.pdt.core.visitor.PDTVisitor;
 import com.dubture.pdt.formatter.core.ast.Formatter;
+import com.dubture.pdt.internal.ui.codemanipulation.ClassStub;
+import com.dubture.pdt.internal.ui.codemanipulation.MethodStub;
 import com.dubture.pdt.ui.PDTPluginImages;
 import com.dubture.pdt.ui.PDTUIPlugin;
-import com.dubture.pdt.ui.codemanipulation.CodeGeneration;
 
 /**
  *
@@ -92,7 +93,7 @@ public class InterfaceMethodCompletionProposal extends PHPCompletionProposal {
 					for (MissingMethodImplementation miss : visitor.getUnimplementedMethods()) {
 						
 						for (IMethod method : miss.getMisses()) {
-							code += CodeGeneration.getMethodStub(method.getParent().getElementName(), method, indent, TextUtilities.getDefaultLineDelimiter(document), false);
+							code += MethodStub.getMethodStub(method.getParent().getElementName(), method, indent, TextUtilities.getDefaultLineDelimiter(document), false);
 						}
 											
 						document.replace(miss.getInjectionOffset(), 0, code);
